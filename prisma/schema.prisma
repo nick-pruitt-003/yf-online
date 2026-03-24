@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Better Auth relations
+  sessions   Session[]
+  accounts   Account[]
+
+  // YF relations
+  tournaments YfTournament[]
+  sharedWith  YfTournamentShare[]
+}
+
+// ─── Better Auth Tables ───────────────────────────────────────────────────────
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id           String    @id @default(cuid())
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+  password     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@unique([identifier, value])
+}
+
+// ─── YellowFruit Tournaments ──────────────────────────────────────────────────
+
+model YfTournament {
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+  data      Json     // full YFT file contents (serialized YellowFruit tournament)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shares YfTournamentShare[]
+
+  @@index([ownerId])
+}
+
+model YfTournamentShare {
+  id           String       @id @default(cuid())
+  tournamentId String
+  tournament   YfTournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canEdit      Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+
+  @@unique([tournamentId, userId])
+  @@index([userId])
+}
