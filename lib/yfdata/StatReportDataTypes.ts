@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-cycle
-import Tournament from './Tournament';
+import type Tournament from './Tournament';
 
 export enum StatTypes {
   wins,
@@ -138,6 +137,8 @@ export function columnTooltip(stat: StatTypes, tournament: Tournament) {
       return 'Points earned from lightning rounds per team per game';
     case StatTypes.wouldAdvance:
       return 'Level of the next stage of the tournament that the team would advance to, given the current standings';
+    case StatTypes.advancedTo:
+      return 'Level of the next stage the team advanced to, given the final standings';
     case StatTypes.gamesPlayed:
       return 'Games played';
     case StatTypes.rrPtsPerTeamPerXTuh:

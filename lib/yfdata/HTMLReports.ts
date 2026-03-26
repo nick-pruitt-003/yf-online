@@ -899,7 +899,8 @@ export default class HtmlReportGenerator {
     cells.push(textCell(this.teamDetailLink(opponent.team)));
     cells.push(textCell(result.match.getResultDisplay(result.whichTeam)));
     cells.push(textCell(this.scoreboardMatchLink(result.match, result.match.getScoreOnly(result.whichTeam, true))));
-    const gamesPlayed = (result.matchPlayer.tossupsHeard ?? 0) / (result.match.tossupsRead ?? 0);
+    const tossupsRead = result.match.tossupsRead ?? 0;
+    const gamesPlayed = tossupsRead > 0 ? (result.matchPlayer.tossupsHeard ?? 0) / tossupsRead : 0;
     cells.push(numericCell(forf ? '' : gamesPlayed.toFixed(1)));
 
     this.tournament.scoringRules.answerTypes.forEach((at) => {
@@ -1179,7 +1180,7 @@ const topAnchorID = 'top';
 
 /** id HTML attribute */
 function id(val: string) {
-  return `id=${val}`;
+  return `id="${val}"`;
 }
 
 function roundLinkId(round: Round) {
@@ -1298,14 +1299,14 @@ function getPageStyle() {
 
 /** An <a> tag for hyperlinks */
 function aTag(href: string, contents: string, newTab?: boolean) {
-  if (newTab) return `<a HREF=${href} target="_blank">${contents}</a>`;
-  return `<a HREF=${href}>${contents}</a>`;
+  if (newTab) return `<a href="${href}" target="_blank" rel="noopener noreferrer">${contents}</a>`;
+  return `<a href="${href}">${contents}</a>`;
 }
 
 function tableTag(trTags: string[], width?: string, cssClass?: string, border?: string) {
-  const widthAttr = width !== undefined ? `width=${width}` : '';
-  const classAttr = cssClass !== undefined ? `class=${cssClass}` : '';
-  const borderAttr = border !== undefined ? `border=${border}` : '';
+  const widthAttr = width !== undefined ? `width="${width}"` : '';
+  const classAttr = cssClass !== undefined ? `class="${cssClass}"` : '';
+  const borderAttr = border !== undefined ? `border="${border}"` : '';
   return `<table ${borderAttr} ${classAttr} ${widthAttr}>\n${trTags.join('\n')}\n</table>`;
 }
 
