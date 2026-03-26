@@ -14,6 +14,9 @@ interface Props {
 export default function StatsTab({ handle }: Props) {
   const { tournament } = handle;
 
+  // compileStats mutates tournament.stats in place on the stable ref — intentional.
+  // We depend on handle.version (bumped by every update) rather than the tournament
+  // object itself, so stats recompile exactly when tournament data changes.
   const standings = useMemo(() => {
     if (!tournament.readyToAddMatches()) return null;
     tournament.compileStats(false);

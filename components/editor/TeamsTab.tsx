@@ -5,7 +5,7 @@ import {
   Box, Typography, Paper, Button, TextField, IconButton,
   List, ListItem, ListItemText, ListItemSecondaryAction,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Chip, Divider, Alert,
+  Chip, Divider, Alert, DialogContentText,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -40,6 +40,7 @@ const emptyDialog = (): TeamDialogState => ({
 export default function TeamsTab({ handle, canEdit }: Props) {
   const { tournament, update } = handle;
   const [dialog, setDialog] = useState<TeamDialogState>(emptyDialog());
+  const [confirmDelete, setConfirmDelete] = useState<Team | null>(null);
 
   const allTeams = tournament.getListOfAllTeams();
   const totalTeams = allTeams.length;
@@ -66,9 +67,10 @@ export default function TeamsTab({ handle, canEdit }: Props) {
     if (editTeam) {
       update((t) => {
         editTeam.name = teamName.trim();
-        editTeam.players = players.map((name) => {
-          const existing = editTeam.players.find((p) => p.name === name);
-          return existing ?? new Player(name);
+        editTeam.players = players.map((name, idx) => {
+          const byIndex = editTeam.players[idx];
+          if (byIndex) { byIndex.name = name; return byIndex; }
+          return new Player(name);
         });
         // Update org name if changed
         const reg = t.registrations.find((r) => r.teams.includes(editTeam));
@@ -84,12 +86,8 @@ export default function TeamsTab({ handle, canEdit }: Props) {
   };
 
   const handleDelete = (team: Team) => {
-    if (tournament.teamHasPlayedAnyMatch(team)) {
-      alert(`${team.name} has played matches and cannot be deleted.`);
-      return;
-    }
-    if (!confirm(`Delete ${team.name}?`)) return;
-    update((t) => deleteTeamFromTournament(t, team));
+    if (tournament.teamHasPlayedAnyMatch(team)) return;
+    setConfirmDelete(team);
   };
 
   return (
@@ -121,7 +119,7 @@ export default function TeamsTab({ handle, canEdit }: Props) {
             </Box>
             <List dense disablePadding>
               {reg.teams.map((team, i) => (
-                <Box key={team.name}>
+                <Box key={`${reg.name}-${team.name}-${i}`}>
                   {i > 0 && <Divider />}
                   <ListItem sx={{ py: 1 }}>
                     <ListItemText
@@ -154,6 +152,29 @@ export default function TeamsTab({ handle, canEdit }: Props) {
           </Paper>
         ))
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)}>
+        <DialogTitle>Delete team?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete <strong>{confirmDelete?.name}</strong>? This cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDelete(null)}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              if (confirmDelete) update((t) => deleteTeamFromTournament(t, confirmDelete));
+              setConfirmDelete(null);
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialog.open} onClose={() => setDialog(emptyDialog())} maxWidth="sm" fullWidth>

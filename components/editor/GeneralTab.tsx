@@ -2,6 +2,7 @@
 
 import { Box, Typography, TextField, Checkbox, FormControlLabel, Divider, Paper } from '@mui/material';
 import type { TournamentHandle } from '@/lib/yfweb/useTournament';
+import { TournamentSite } from '@/lib/yfdata/TournamentSite';
 
 interface Props {
   handle: TournamentHandle;
@@ -41,7 +42,11 @@ export default function GeneralTab({ handle, canEdit }: Props) {
         <Box display="flex" flexDirection="column" gap={2}>
           {field('Tournament Name', t.name, (v) => update((tr) => { tr.name = v; }))}
           {field('Site / Venue', t.tournamentSite?.name ?? '', (v) => update((tr) => {
-            if (tr.tournamentSite) tr.tournamentSite.name = v;
+            if (tr.tournamentSite) {
+              tr.tournamentSite.name = v;
+            } else {
+              tr.tournamentSite = new TournamentSite(v);
+            }
           }))}
           <Box display="flex" gap={2}>
             {field('Start Date', t.startDate ?? '', (v) => update((tr) => { tr.startDate = v; }), 'date')}
@@ -83,7 +88,7 @@ export default function GeneralTab({ handle, canEdit }: Props) {
                     value={r.packet?.name ?? ''}
                     disabled={!canEdit}
                     onChange={(e) => update((tr) => {
-                      const phase = tr.phases.find((p) => p === ph);
+                      const phase = tr.phases.find((p) => p.name === ph.name);
                       const round = phase?.rounds.find((rd) => rd.number === r.number);
                       if (round?.packet) round.packet.name = e.target.value;
                     })}

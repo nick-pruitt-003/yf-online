@@ -90,7 +90,7 @@ export default function NewTournamentPage() {
             )}
 
             <Box display="flex" justifyContent="flex-end" gap={1.5} mt={1}>
-              <NextLink href="/dashboard" style={{ textDecoration: 'none' }}>
+              <NextLink href="/dashboard" style={{ textDecoration: 'none' }} onClick={(e) => { if (loading) e.preventDefault(); }}>
                 <Button variant="text" disabled={loading}>Cancel</Button>
               </NextLink>
               <Button type="submit" variant="contained" disabled={loading || !name.trim()}>
