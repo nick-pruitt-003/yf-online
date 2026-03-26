@@ -109,7 +109,7 @@ export function versionLt(a: string, b: string, type?: 'major' | 'minor' | 'patc
   return aSplit[2] < bSplit[2];
 }
 
-/** Conver a version string like '1.2.3' to an array of numbers */
+/** Convert a version string like '1.2.3' to an array of numbers */
 function getVersionNumbers(versionString: string) {
   return versionString.split('.').map((val) => parseInt(val, 10));
 }
@@ -127,6 +127,9 @@ export function trunc(s: string, size: number) {
 
 /** Returns Ctrl or ⌘, for showing keyboard shortcuts */
 export function CtrlOrCmd() {
-  if (typeof navigator !== 'undefined' && navigator.platform.includes('Mac')) return String.fromCharCode(0x2318);
+  if (typeof navigator !== 'undefined') {
+    const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.userAgent;
+    if (platform.includes('Mac')) return String.fromCharCode(0x2318);
+  }
   return 'Ctrl';
 }

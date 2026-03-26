@@ -156,6 +156,8 @@ export const Sched22Teams14Rounds976Split: StandardSchedule = {
     const prelimPools = makePoolSet(3, 8, 1, 'Prelim ', [3, 2]);
     prelimPools[0].size = 7;
     prelimPools[1].size = 7;
+    setAutoAdvanceRules(prelimPools[0], [3, 2]);
+    setAutoAdvanceRules(prelimPools[1], [3, 2]);
     snakeSeed(prelimPools, 1, 22);
 
     const championship = new Pool(9, 1, 'Championship', true);

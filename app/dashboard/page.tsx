@@ -32,11 +32,9 @@ export default async function DashboardPage() {
     <Box maxWidth={800} mx="auto" px={3} py={5}>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
         <Typography variant="h4" fontWeight={700}>My Tournaments</Typography>
-        <NextLink href="/tournament/new" style={{ textDecoration: 'none' }}>
-          <Button variant="contained" startIcon={<AddIcon />}>
-            New tournament
-          </Button>
-        </NextLink>
+        <Button variant="contained" startIcon={<AddIcon />} href="/tournament/new" LinkComponent={NextLink}>
+          New tournament
+        </Button>
       </Box>
 
       {owned.length === 0 && shared.length === 0 ? (
@@ -44,9 +42,9 @@ export default async function DashboardPage() {
           <Typography color="text.secondary" mb={2}>
             No tournaments yet. Create one to get started.
           </Typography>
-          <NextLink href="/tournament/new" style={{ textDecoration: 'none' }}>
-            <Button variant="outlined">Create your first tournament</Button>
-          </NextLink>
+          <Button variant="outlined" href="/tournament/new" LinkComponent={NextLink}>
+            Create your first tournament
+          </Button>
         </Box>
       ) : (
         <>

@@ -50,13 +50,26 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
   if (!isOwner && !share?.canEdit) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const { data, name } = await req.json();
+  let data: unknown;
+  let name: unknown;
+  try {
+    ({ data, name } = await req.json());
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  if (data !== undefined && (typeof data !== 'object' || data === null || Array.isArray(data))) {
+    return NextResponse.json({ error: 'Invalid data field' }, { status: 400 });
+  }
+  if (name !== undefined && typeof name !== 'string') {
+    return NextResponse.json({ error: 'Invalid name field' }, { status: 400 });
+  }
 
   const updated = await prisma.yfTournament.update({
     where: { id },
     data: {
       ...(data !== undefined && { data: data as object }),
-      ...(name !== undefined && { name: String(name) }),
+      ...(name !== undefined && { name }),
     },
     select: { id: true, name: true, updatedAt: true },
   });

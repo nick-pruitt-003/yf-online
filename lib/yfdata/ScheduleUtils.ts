@@ -145,12 +145,15 @@ export const sizesWithTemplates = [
 ];
 
 export function getStdSchedule(shortName: string, size: number | string) {
-  if (typeof size === 'string') return null;
-  return getTemplateList(size).find((sch) => sch.shortName === shortName) ?? null;
+  const n = typeof size === 'string' ? Number(size) : size;
+  if (Number.isNaN(n)) return null;
+  return getTemplateList(n).find((sch) => sch.shortName === shortName) ?? null;
 }
 
 export function getTemplateList(size: number | string) {
-  if (typeof size === 'string') return [];
+  const n = typeof size === 'string' ? Number(size) : size;
+  if (Number.isNaN(n)) return [];
+  size = n;
 
   switch (size) {
     case 4:

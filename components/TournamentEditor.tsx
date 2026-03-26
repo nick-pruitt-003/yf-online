@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box, AppBar, Toolbar, Typography, Tabs, Tab, Button,
@@ -9,7 +9,6 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
-import { useState } from 'react';
 import { useTournament } from '@/lib/yfweb/useTournament';
 import GeneralTab from '@/components/editor/GeneralTab';
 import TeamsTab from '@/components/editor/TeamsTab';
@@ -119,11 +118,13 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit }:
         {tab === 'Stats'    && <StatsTab handle={handle} />}
       </Box>
 
-      <Snackbar open={!!toast} autoHideDuration={3000} onClose={() => setToast(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert severity={toast?.severity} onClose={() => setToast(null)} sx={{ width: '100%' }}>
-          {toast?.msg}
-        </Alert>
-      </Snackbar>
+      {toast && (
+        <Snackbar open={!!toast} autoHideDuration={3000} onClose={() => setToast(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+          <Alert severity={toast.severity} onClose={() => setToast(null)} sx={{ width: '100%' }}>
+            {toast.msg}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 }

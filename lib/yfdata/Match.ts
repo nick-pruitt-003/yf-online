@@ -721,12 +721,12 @@ export class Match implements IQbjMatch, IYftDataModelObject {
     const totalConvertedTU = this.getTotalTuConverted();
     if (this.tossupsRead !== undefined && this.tossupsRead > 0 && totalConvertedTU > this.tossupsRead) {
       this.modalBottomValidation.addValidationMsg(
-        MatchValidationType.MatchHasTooConvertedTU,
+        MatchValidationType.MatchHasTooManyConvertedTU,
         ValidationStatuses.Error,
         `Total number of tossups converted (${totalConvertedTU}) exceeds the number of tossups in the game (${this.tossupsRead})`,
       );
     } else {
-      this.modalBottomValidation.clearMsgType(MatchValidationType.MatchHasTooConvertedTU);
+      this.modalBottomValidation.clearMsgType(MatchValidationType.MatchHasTooManyConvertedTU);
     }
 
     for (const matchTeam of [this.leftTeam, this.rightTeam]) {

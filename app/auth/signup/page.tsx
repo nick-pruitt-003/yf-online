@@ -29,11 +29,14 @@ export default function SignupPage() {
       return;
     }
     setLoading(true);
-    const { error: err } = await signUp.email({ name, email, password });
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const { error: err } = await signUp.email({ name: trimmedName, email: trimmedEmail, password });
     if (err) {
       setError(err.message ?? 'Could not create account.');
       setLoading(false);
     } else {
+      setLoading(false);
       router.push('/dashboard');
     }
   }

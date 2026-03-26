@@ -16,7 +16,7 @@ enum AutoQualificationRankRules {
   /** Use PPG as tiebreaker, then break PPG ties at the buzzer */
   RecordThenPPGThenTB = 'RecordThenPPGThenTB',
   /** Use PPG as tiebreaker. If same PPG, use something other than TB games (powers, coin flip, etc.) */
-  RecordThenPPGThenOther = 'RecordthenPPGThenOther',
+  RecordThenPPGThenOther = 'RecordThenPPGThenOther',
 }
 
 const defaultAutoQualRankRule = AutoQualificationRankRules.RecordThenPPGThenOther;
@@ -309,11 +309,11 @@ function placementPoolName(topRank: number) {
 }
 
 /**
- * Populate seeds array in the given pools. Caller is resonsible for making sure pools are in the desired order
+ * Populate seeds array in the given pools. Caller is responsible for making sure pools are in the desired order
  * and that numTeams is compatible with the list of pools.
  * @param pools List of pools. Should be in the same tier.
  * @param topSeed Highest seed involved (lowest number)
- * @param bottomSeed Lowest seed invovled (highest number)
+ * @param bottomSeed Lowest seed involved (highest number)
  */
 export function snakeSeed(pools: Pool[], topSeed: number, bottomSeed: number) {
   let seed = topSeed;

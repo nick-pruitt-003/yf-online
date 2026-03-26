@@ -62,7 +62,7 @@ class Registration implements IQbjRegistration, IYftDataModelObject {
 
   copyFromRegistration(source: Registration) {
     this.name = source.name;
-    this.teams = source.teams;
+    this.teams = source.teams?.map((t) => t.makeCopy()) ?? [];
     this.isSmallSchool = source.isSmallSchool;
   }
 

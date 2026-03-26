@@ -21,8 +21,7 @@ export const Sched52Teams10RoundsPlusF: StandardSchedule = {
     snakeSeed(prelimPools, 1, 52);
 
     const playoffTopPools = makePoolSet(2, 6, 1, 'Championship ', []);
-    let playoffLowerPools = makePlacementPools(5, 6, 2, 13, 42);
-    playoffLowerPools = playoffLowerPools.concat(makePlacementPools(2, 5, 7, 43, 52));
+    const playoffLowerPools = [...makePlacementPools(5, 6, 2, 13, 42), ...makePlacementPools(2, 5, 7, 43, 52)];
 
     snakeSeed(playoffTopPools, 1, 12);
 

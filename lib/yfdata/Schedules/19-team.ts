@@ -1,4 +1,4 @@
-/** Standard schedules for 20-team tournaments */
+/** Standard schedules for 19-team tournaments */
 
 import { Phase, PhaseTypes } from '../Phase';
 import { Pool, makePoolSet, setAutoAdvanceRules, snakeSeed } from '../Pool';
@@ -21,9 +21,9 @@ export const Sched19Teams11Rounds: StandardSchedule = {
 
     const championship = new Pool(4, 1, 'Championship', true);
     const place5 = new Pool(4, 2, '5th Place', true);
-    const place9 = new Pool(4, 3, '8th Place', true);
+    const place9 = new Pool(4, 3, '9th Place', true);
     const place13 = new Pool(4, 4, '13th Place', true);
-    const place17 = new Pool(3, 5, '17thPlace', true);
+    const place17 = new Pool(3, 5, '17th Place', true);
 
     championship.setSeedRange(1, 4);
     place5.setSeedRange(5, 8);
@@ -44,7 +44,7 @@ export const Sched19Teams11Rounds: StandardSchedule = {
 export const Sched19Teams12Rounds: StandardSchedule = {
   fullName: '19 Teams - Pools of 10 and 9, then Playoff Pools of 6/6/4/3',
   shortName: '12 Rounds',
-  size: 20,
+  size: 19,
   rounds: 12,
   rebracketAfter: [9],
   rooms: 9,
@@ -79,7 +79,7 @@ export const Sched19Teams12Rounds: StandardSchedule = {
 export const Sched19Teams13Rounds: StandardSchedule = {
   fullName: '19 Teams - Pools of 10 and 9, then Playoff Pools of 8/6/5',
   shortName: '13 Rounds',
-  size: 20,
+  size: 19,
   rounds: 13,
   rebracketAfter: [9],
   rooms: 9,
@@ -112,7 +112,7 @@ export const Sched19Teams13Rounds: StandardSchedule = {
 export const Sched19Teams14Rounds: StandardSchedule = {
   fullName: '19 Teams - Pools of 10 and 9, then Playoff Pools of 10 and 9',
   shortName: '14 Rounds',
-  size: 20,
+  size: 19,
   rounds: 14,
   rebracketAfter: [9],
   rooms: 9,

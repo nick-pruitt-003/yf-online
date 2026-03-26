@@ -39,22 +39,23 @@ export interface TournamentHandle {
 }
 
 export function useTournament(initialData: unknown): TournamentHandle {
-  const ref = useRef<Tournament>(deserialize(initialData));
+  const ref = useRef<Tournament | null>(null);
+  if (ref.current === null) ref.current = deserialize(initialData);
   const [version, setVersion] = useState(0);
   const [dirty, setDirty] = useState(false);
 
   const update = useCallback((fn: (t: Tournament) => void) => {
-    fn(ref.current);
+    fn(ref.current!);
     setVersion((v) => v + 1);
     setDirty(true);
   }, []);
 
   const clearDirty = useCallback(() => setDirty(false), []);
 
-  const serializeFn = useCallback(() => serialize(ref.current), []);
+  const serializeFn = useCallback(() => serialize(ref.current!), []);
 
   return {
-    tournament: ref.current,
+    tournament: ref.current!,
     update,
     serialize: serializeFn,
     dirty,

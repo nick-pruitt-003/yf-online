@@ -86,7 +86,7 @@ class MatchImportResult {
     const sortedResults = results.slice().sort((a, b) => (a.round?.number ?? -1) - (b.round?.number ?? -1));
     let curRound: Round | undefined = undefined;
     let teamsInRound: Team[] = [];
-    for (const rslt of results) {
+    for (const rslt of sortedResults) {
       const { match, round } = rslt;
       if (!match || !round) continue;
 
@@ -101,7 +101,7 @@ class MatchImportResult {
       const rightDup = rightTeam && teamsInRound.includes(rightTeam);
       let msg = '';
       if (leftDup) msg += `You are importing multiple games for ${leftTeam.name} into this round.`;
-      if (rightDup) msg += `You are importing multiple games for ${rightTeam.name} into this round.`;
+      if (rightDup) msg += `${msg ? ' ' : ''}You are importing multiple games for ${rightTeam.name} into this round.`;
       if (leftDup || rightDup) {
         rslt.markWarning(msg);
       }

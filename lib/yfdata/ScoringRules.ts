@@ -7,7 +7,7 @@ export enum CommonRuleSets {
   NaqtUntimed = 'NaqtUntimed',
   NaqtTimed = 'NaqtTimed',
   Acf = 'Acf',
-  AcfPowers = 'mAcfPowers',
+  AcfPowers = 'AcfPowers',
 }
 
 /**

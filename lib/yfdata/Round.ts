@@ -35,7 +35,7 @@ interface IRoundExtraData {
 
 /** One round of games */
 export class Round implements IQbjRound, IYftDataModelObject {
-  /** Number for ordering. For normal rounds, an interger. For tiebreakers/finals, might not be */
+  /** Number for ordering. For normal rounds, an integer. For tiebreakers/finals, might not be */
   number: number;
 
   private _name?: string;

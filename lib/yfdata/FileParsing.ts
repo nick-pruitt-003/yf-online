@@ -204,7 +204,7 @@ export default class FileParser {
     }
 
     if (qbjScoringRules.teamsPerMatch && qbjScoringRules.teamsPerMatch !== 2) {
-      throw new Error(`YellowFruit doesn't support formates with ${qbjScoringRules.teamsPerMatch} teams per match.`);
+      throw new Error(`YellowFruit doesn't support formats with ${qbjScoringRules.teamsPerMatch} teams per match.`);
     }
 
     const yftScoringRules = new ScoringRules();
@@ -975,6 +975,7 @@ export default class FileParser {
   /** Get the phase pointers. Later we'll hook the match object up with the real Phase objects once we have them. */
   parseMatchCarryoverPhasesStart(ary: IIndeterminateQbj[]): IQbjRefPointer[] {
     const carryoverPhasesIds: IQbjRefPointer[] = [];
+    if (!ary) return carryoverPhasesIds;
     for (const obj of ary) {
       // Require phases here to be ref pointers. It's very silly to define phases within objects that are themselves contained within phases.
       // Don't give me a headache.
@@ -1050,7 +1051,7 @@ export default class FileParser {
       if (!oneBuzz) continue;
 
       if (!allowedTeams.includes(oneBuzz.team)) {
-        throw new Error("A Match object contains a MatchQuestionBuzz for a team that doesn' play in the match");
+        throw new Error("A Match object contains a MatchQuestionBuzz for a team that doesn't play in the match");
       }
 
       yfMatchQuestionBuzzes.push(oneBuzz);

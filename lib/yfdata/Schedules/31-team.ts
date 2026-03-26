@@ -54,7 +54,7 @@ export const Sched31Teams9Rounds: StandardSchedule = {
 };
 
 export const Sched31Teams11Rounds: StandardSchedule = {
-  fullName: '32 Teams - Pools of 7 or 8, then Pools of 3 or 4, then Pools of 3 or 4',
+  fullName: '31 Teams - Pools of 7 or 8, then Pools of 3 or 4, then Pools of 3 or 4',
   shortName: '11 Rounds',
   size: 31,
   rounds: 11,

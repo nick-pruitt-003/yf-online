@@ -23,7 +23,7 @@ export const Sched28Teams10Rounds7to4: StandardSchedule = {
 
     const prelims = new Phase(PhaseTypes.Prelim, 1, 7, '1');
     const playoffs = new Phase(PhaseTypes.Playoff, 8, 10, '2');
-    const finals = new Phase(PhaseTypes.Finals, 9, 9, '3');
+    const finals = new Phase(PhaseTypes.Finals, 11, 11, '3');
 
     prelims.pools = prelimPools;
     playoffs.pools = playoffTopPools.concat(playoffLowerPools);

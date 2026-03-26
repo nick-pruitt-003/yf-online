@@ -52,9 +52,9 @@ export const Sched20Teams11Rounds2x10: StandardSchedule = {
 
     const championship = new Pool(4, 1, 'Championship', true);
     const place5 = new Pool(4, 2, '5th Place', true);
-    const place9 = new Pool(4, 3, '8th Place', true);
+    const place9 = new Pool(4, 3, '9th Place', true);
     const place13 = new Pool(4, 4, '13th Place', true);
-    const place17 = new Pool(4, 5, '17thPlace', true);
+    const place17 = new Pool(4, 5, '17th Place', true);
 
     championship.setSeedRange(1, 4);
     place5.setSeedRange(5, 8);

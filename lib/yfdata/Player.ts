@@ -56,7 +56,7 @@ interface IPlayerExtraData {
 export class Player implements IQbjPlayer, IYftDataModelObject {
   name: string;
 
-  /** Grede/year in school - the raw string entered by the user */
+  /** Grade/year in school - the raw string entered by the user */
   yearString: string = '';
 
   static readonly nameMaxLength = 200;
@@ -173,7 +173,7 @@ export class Player implements IQbjPlayer, IYftDataModelObject {
   copyFromPlayer(source: Player, logSource: boolean = false) {
     this.name = source.name;
     this.yearString = source.yearString;
-    this.idNumber = source.idNumber;
+    // idNumber is NOT copied — the copy already received a unique idNumber from the constructor
     this.isUG = source.isUG;
     this.isD2 = source.isD2;
     if (logSource) this.sourcePlayer = source;
@@ -279,7 +279,7 @@ export class Player implements IQbjPlayer, IYftDataModelObject {
     for (const yr in this.yearSearchStr) {
       if (this._startsWithAny(lcText, this.yearSearchStr[yr as unknown as keyof typeof this.yearSearchStr])) {
         const yrInt = parseInt(yr, 10);
-        if (yrInt === undefined) return null;
+        if (Number.isNaN(yrInt)) return null;
         return yrInt;
       }
     }

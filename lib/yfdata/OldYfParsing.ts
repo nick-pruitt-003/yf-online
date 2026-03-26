@@ -567,8 +567,8 @@ function settingsConversion2x5x0(settings: any) {
 function gameConversion2x5x0(games: any) {
   // eslint-disable-next-line guard-for-in
   for (const i in games) {
-    games[i].lightningPts1 = '';
-    games[i].lightningPts2 = '';
+    games[i].lightningPts1 = 0;
+    games[i].lightningPts2 = 0;
   }
 }
 

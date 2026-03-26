@@ -82,6 +82,9 @@ export class MatchQuestion implements IQbjMatchQuestion, IYftDataModelObject {
     if (tossupPoints > 0) {
       return tossupPoints + controlled;
     }
+    if (tossupPoints < 0) {
+      return tossupPoints;
+    }
     return tossupPoints + bounceback;
   }
 

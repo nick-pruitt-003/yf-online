@@ -80,7 +80,7 @@ model YfTournament {
   id        String   @id @default(cuid())
   name      String
   ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   data      Json     // full YFT file contents (serialized YellowFruit tournament)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

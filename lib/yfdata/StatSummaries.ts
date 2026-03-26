@@ -400,6 +400,7 @@ export class PoolStats {
 
   /** Assuming teams have been assigned provisional tiers, remove them if we'd actually want to play a tiebreaker to figure this out */
   advancementTiersHandleTies() {
+    if (this.poolTeams.length === 0) return;
     let prevTeam = this.poolTeams[0];
     for (let i = 1; i < this.poolTeams.length; i++) {
       const oneTeam = this.poolTeams[i];
@@ -728,7 +729,9 @@ export class PlayerStats {
       return;
     }
 
-    this.gamesPlayed += mp.tossupsHeard / tossupsRead;
+    if (tossupsRead > 0) {
+      this.gamesPlayed += mp.tossupsHeard / tossupsRead;
+    }
     this.tossupsHeard += mp.tossupsHeard;
     for (const ac of mp.answerCounts) {
       this.addAnswerCount(ac);

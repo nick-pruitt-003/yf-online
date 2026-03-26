@@ -217,8 +217,10 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
   setRoundRange(firstRound: number, lastRound: number) {
     const newRoundArray: Round[] = [];
     let curRequestedRound = firstRound;
-    for (const rd of this.rounds) {
-      if (rd.number > lastRound || rd.number < firstRound) break;
+    const sortedRounds = this.rounds.slice().sort((a, b) => a.number - b.number);
+    for (const rd of sortedRounds) {
+      if (rd.number < firstRound) continue;
+      if (rd.number > lastRound) break;
 
       if (rd.number > curRequestedRound) {
         for (let i = curRequestedRound; i < rd.number; i++) {
@@ -571,7 +573,7 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
     }
   }
 
-  /** Explicitly not that this team doesn't move to the next phase */
+  /** Explicitly note that this team doesn't move to the next phase */
   markTeamDidNotAdvance(team: Team, val: boolean) {
     for (const pool of this.pools) {
       const pt = pool.getPoolTeam(team);
@@ -597,7 +599,7 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
     this.pools.splice(positionDroppedOn, 0, poolToMove);
   }
 
-  /** Find all the matches involving at least one team in this pool. Set each matche's validation for whether both teams are in the same pool. */
+  /** Find all the matches involving at least one team in this pool. Set each match's validation for whether both teams are in the same pool. */
   revalidateMatchesForPoolCompatibility(pool: Pool) {
     for (const rd of this.rounds) {
       for (const m of rd.matches) {
@@ -614,7 +616,7 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
     }
   }
 
-  /** Find all the matches involving at least one team in the pool with this seed. Set each matche's validation for whether both teams are in the same pool. */
+  /** Find all the matches involving at least one team in the pool with this seed. Set each match's validation for whether both teams are in the same pool. */
   revalidateMatchesForPoolCompatFromSeed(seed: number) {
     const pool = this.findPoolWithSeed(seed);
     if (pool) this.revalidateMatchesForPoolCompatibility(pool);

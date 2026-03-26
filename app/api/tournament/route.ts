@@ -9,7 +9,15 @@ export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { name, siteName, date } = await req.json();
+  let name: string | undefined;
+  let siteName: string | undefined;
+  let date: string | undefined;
+  try {
+    ({ name, siteName, date } = await req.json());
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
   if (!name?.trim()) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
 
   // Build an empty YellowFruit tournament using the DataModel
@@ -23,14 +31,20 @@ export async function POST(req: NextRequest) {
 
   const data = tournament.toFileObject();
 
-  const record = await prisma.yfTournament.create({
-    data: {
-      name: name.trim(),
-      ownerId: session.user.id,
-      data: data as object,
-    },
-    select: { id: true },
-  });
+  let record: { id: string };
+  try {
+    record = await prisma.yfTournament.create({
+      data: {
+        name: name.trim(),
+        ownerId: session.user.id,
+        data: data as object,
+      },
+      select: { id: true },
+    });
+  } catch (err) {
+    console.error('Failed to create tournament:', err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: 'Failed to create tournament' }, { status: 500 });
+  }
 
   return NextResponse.json({ id: record.id }, { status: 201 });
 }

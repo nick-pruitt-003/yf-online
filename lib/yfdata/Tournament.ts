@@ -332,10 +332,10 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
   /** Get the prelim or playoff phase that preceded this one */
   getPrevFullPhase(phase: Phase): Phase | undefined {
     let idx = this.phases.indexOf(phase) - 1;
-    while (idx >= -1 && !this.phases[idx]?.isFullPhase()) {
+    while (idx >= 0 && !this.phases[idx].isFullPhase()) {
       idx--;
     }
-    if (idx === -1) return undefined;
+    if (idx < 0) return undefined;
     return this.phases[idx];
   }
 
@@ -471,7 +471,7 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
   }
 
   addFinalsPhase() {
-    const roundNumber = this.phases[this.phases.length - 1].lastRoundNumber() + 1;
+    const roundNumber = this.phases.length > 0 ? this.phases[this.phases.length - 1].lastRoundNumber() + 1 : 1;
     const numFinalsAlready = this.getFinalsPhases().length;
     const phaseName = numFinalsAlready > 0 ? `Finals (${numFinalsAlready + 1})` : undefined;
     this.phases.push(new Phase(PhaseTypes.Finals, roundNumber, roundNumber, this.nextPhaseCode(), phaseName));
@@ -613,12 +613,13 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
   private getNewPhaseName() {
     const fullPhases = this.getFullPhases();
     if (fullPhases.find((ph) => ph.name === 'New Stage')) {
-      for (let i = 2; ; i++) {
+      for (let i = 2; i <= 1000; i++) {
         const altName = `New Stage ${i}`;
         if (!fullPhases.find((ph) => ph.name === altName)) {
           return altName;
         }
       }
+      return 'New Stage (overflow)';
     }
     return 'New Stage';
   }

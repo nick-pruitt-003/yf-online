@@ -47,7 +47,7 @@ export const Sched26Teams10RoundsWC: StandardSchedule = {
 export const Sched26Teams10RoundsNoWC: StandardSchedule = {
   fullName: '26 Teams - Pools of 5 or 6 Teams, then 10/5/5/6 split',
   shortName: '10 Rounds + Finals (6 in bottom pool)',
-  size: 25,
+  size: 26,
   rounds: 10,
   rebracketAfter: [5],
   rooms: 11,

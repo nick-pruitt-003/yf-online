@@ -32,7 +32,7 @@ export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props)
       <Box flex={1}>
         <Typography fontWeight={600}>{name}</Typography>
         <Typography variant="caption" color="text.secondary">
-          Last edited {updatedAt.toLocaleDateString()}
+          Last edited {updatedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
           {sharedBy ? ` · shared by ${sharedBy}` : ''}
         </Typography>
       </Box>
