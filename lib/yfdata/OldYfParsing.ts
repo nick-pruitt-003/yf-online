@@ -329,10 +329,10 @@ function parseGames(tourn: Tournament, oldYfGames: IOldYfGame[]) {
     if (!leftTeam || !rightTeam) continue;
 
     if (!tourn.findPoolWithTeam(leftTeam, yfRound)) {
-      addTeamToAbritraryPool(leftTeam, tourn, mainPhase);
+      addTeamToArbitraryPool(leftTeam, tourn, mainPhase);
     }
     if (!tourn.findPoolWithTeam(rightTeam, yfRound)) {
-      addTeamToAbritraryPool(rightTeam, tourn, mainPhase);
+      addTeamToArbitraryPool(rightTeam, tourn, mainPhase);
     }
 
     const newMatch = new Match(leftTeam, rightTeam, tourn.scoringRules.answerTypes);
@@ -417,7 +417,7 @@ function getAttributesToTrack(tourn: Tournament, oldYfTeams: IOldYfTeam[]) {
 }
 
 /** Find or make a pool to put this team in. Necessary because old versions don't actually require that you make pools */
-function addTeamToAbritraryPool(team: Team, tourn: Tournament, phase: Phase) {
+function addTeamToArbitraryPool(team: Team, tourn: Tournament, phase: Phase) {
   for (const pool of phase.pools) {
     if (pool.poolTeams.length < pool.size) {
       pool.addTeam(team);

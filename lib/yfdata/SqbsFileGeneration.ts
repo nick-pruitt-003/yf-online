@@ -64,7 +64,7 @@ export default class SqbsGenerator {
   }
 
   private validateExportability() {
-    if (this.tournament.scoringRules.answerTypes.length > 4) {
+    if (this.answerTypeList.length > 4) {
       this.errorMessage = "SQBS doesn't support formats with more than 4 tossup point values";
       return;
     }
@@ -249,10 +249,8 @@ export default class SqbsGenerator {
 
   private addPackets() {
     this.addLine(this.getNumPackets());
-    for (const ph of this.phases) {
-      for (const rd of ph.rounds) {
-        this.addLine(rd.packet.name);
-      }
+    for (const { round } of this.matchListByRound) {
+      this.addLine(round.packet.name);
     }
   }
 
