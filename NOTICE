@@ -1,0 +1,16 @@
+YellowFruit Online
+Copyright (C) 2026 Nick Pruitt
+
+This software is based on YellowFruit, Copyright (C) Andrew Nadig.
+Original project: https://github.com/ANadig/YellowFruit
+
+YellowFruit is licensed under the GNU Affero General Public License v3.0.
+YellowFruit Online is a derivative work and is likewise licensed under
+the GNU Affero General Public License v3.0. See the LICENSE file for details.
+
+Modifications made in this derivative work include:
+- Web application frontend built with Next.js and React
+- REST API layer for tournament data persistence
+- PostgreSQL database integration via Prisma
+- User authentication and tournament sharing features
+- Online multi-user tournament management interface
