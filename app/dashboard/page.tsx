@@ -10,23 +10,36 @@ import { prisma } from '@/lib/db';
 import TournamentCard from '@/components/TournamentCard';
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  let session;
+  try {
+    session = await auth.api.getSession({ headers: await headers() });
+  } catch (e) {
+    console.error('[dashboard] getSession error:', e);
+    throw e;
+  }
   if (!session) redirect('/auth/login');
 
-  const [owned, shared] = await Promise.all([
-    prisma.yfTournament.findMany({
-      where: { ownerId: session.user.id },
-      orderBy: { updatedAt: 'desc' },
-      select: { id: true, name: true, updatedAt: true },
-    }),
-    prisma.yfTournamentShare.findMany({
-      where: { userId: session.user.id },
-      include: {
-        tournament: { select: { id: true, name: true, updatedAt: true, owner: { select: { name: true } } } },
-      },
-      orderBy: { tournament: { updatedAt: 'desc' } },
-    }),
-  ]);
+  let owned: { id: string; name: string; updatedAt: Date }[] = [];
+  let shared: { tournament: { id: string; name: string; updatedAt: Date; owner: { name: string } } }[] = [];
+  try {
+    [owned, shared] = await Promise.all([
+      prisma.yfTournament.findMany({
+        where: { ownerId: session.user.id },
+        orderBy: { updatedAt: 'desc' },
+        select: { id: true, name: true, updatedAt: true },
+      }),
+      prisma.yfTournamentShare.findMany({
+        where: { userId: session.user.id },
+        include: {
+          tournament: { select: { id: true, name: true, updatedAt: true, owner: { select: { name: true } } } },
+        },
+        orderBy: { tournament: { updatedAt: 'desc' } },
+      }),
+    ]);
+  } catch (e) {
+    console.error('[dashboard] Prisma query error:', e);
+    throw e;
+  }
 
   return (
     <Box maxWidth={800} mx="auto" px={3} py={5}>
