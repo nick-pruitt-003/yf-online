@@ -1,3 +1,5 @@
+'use client';
+
 import NextLink from 'next/link';
 import { Box, Paper, Typography, Chip } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -5,11 +7,12 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 interface Props {
   id: string;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
   sharedBy?: string;
 }
 
 export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props) {
+  const date = new Date(updatedAt);
   return (
     <Paper
       component={NextLink}
@@ -32,7 +35,7 @@ export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props)
       <Box flex={1}>
         <Typography fontWeight={600}>{name}</Typography>
         <Typography variant="caption" color="text.secondary">
-          Last edited {updatedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+          Last edited {date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
           {sharedBy ? ` · shared by ${sharedBy}` : ''}
         </Typography>
       </Box>
