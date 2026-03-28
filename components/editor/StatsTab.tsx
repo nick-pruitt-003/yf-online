@@ -21,13 +21,14 @@ export default function StatsTab({ handle }: Props) {
     if (!tournament.readyToAddMatches()) return null;
     tournament.compileStats(false);
     return tournament.stats;
-  }, [handle.version]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentional: tournament is a stable ref; handle.version drives recomputation
+  }, [handle.version]);
 
   if (!tournament.readyToAddMatches()) {
     return <Alert severity="info">Add teams and a schedule before viewing stats.</Alert>;
   }
 
-  if (!standings || standings.length === 0 || standings.every((s) => s.pools.every((p) => p.teamStats.length === 0))) {
+  if (!standings || standings.length === 0 || standings.every((s) => s.pools.every((p) => p.poolTeams.length === 0))) {
     return <Alert severity="info">No match data yet. Enter some games to see standings.</Alert>;
   }
 
@@ -60,7 +61,7 @@ export default function StatsTab({ handle }: Props) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {poolSt.teamStats.map((ts, i) => {
+                    {poolSt.poolTeams.map((ts, i) => {
                       const ppg = ts.getPtsPerRegTuhString(tuCount);
                       const ppb = ts.getPtsPerBonusString();
                       return (

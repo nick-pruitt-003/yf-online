@@ -140,7 +140,7 @@ export class MatchTeam implements IQbjMatchTeam, IYftDataModelObject {
   /**
    * Are there player-level stats for this match, as opposed to just team scores?
    */
-  // eslint-disable-next-line class-methods-use-this
+   
   playerLevelStatsExist() {
     return true; // right now, we require entering individual stats
   }

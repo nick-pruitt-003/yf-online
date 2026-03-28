@@ -60,7 +60,7 @@ export default function RulesTab({ handle, canEdit }: Props) {
         </Typography>
         <Box display="flex" flexDirection="column" gap={1.5}>
           {rules.answerTypes.map((aType, i) => (
-            <Box key={`${aType.label}-${aType.value}-${i}`} display="flex" alignItems="center" gap={2}>
+            <Box key={`${aType.label}-${aType.value}`} display="flex" alignItems="center" gap={2}>
               <Chip
                 label={aType.value > 0 ? `+${aType.value}` : String(aType.value)}
                 size="small"

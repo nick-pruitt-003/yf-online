@@ -54,6 +54,7 @@ export function useTournament(initialData: unknown): TournamentHandle {
 
   const serializeFn = useCallback(() => serialize(ref.current!), []);
 
+   
   return {
     tournament: ref.current!,
     update,

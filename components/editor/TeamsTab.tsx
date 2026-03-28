@@ -5,7 +5,7 @@ import {
   Box, Typography, Paper, Button, TextField, IconButton,
   List, ListItem, ListItemText, ListItemSecondaryAction,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Chip, Divider, Alert, DialogContentText,
+  Chip, Divider, DialogContentText,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -39,7 +39,7 @@ const emptyDialog = (): TeamDialogState => ({
 
 export default function TeamsTab({ handle, canEdit }: Props) {
   const { tournament, update } = handle;
-  const [dialog, setDialog] = useState<TeamDialogState>(emptyDialog());
+  const [dialog, setDialog] = useState<TeamDialogState>(emptyDialog);
   const [confirmDelete, setConfirmDelete] = useState<Team | null>(null);
 
   const allTeams = tournament.getListOfAllTeams();
@@ -119,7 +119,7 @@ export default function TeamsTab({ handle, canEdit }: Props) {
             </Box>
             <List dense disablePadding>
               {reg.teams.map((team, i) => (
-                <Box key={`${reg.name}-${team.name}-${i}`}>
+                <Box key={`${reg.name}-${team.name}`}>
                   {i > 0 && <Divider />}
                   <ListItem sx={{ py: 1 }}>
                     <ListItemText

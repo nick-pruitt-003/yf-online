@@ -291,10 +291,12 @@ export class ScoringRules implements IQbjScoringRules, IYftDataModelObject {
     return this.bonusesAreRegular();
   }
 
+  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix -- data model method, not a hook; renaming would break many call sites
   useLightningRounds() {
     return this.lightningCountPerTeam > 0;
   }
 
+  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix -- data model method, not a hook; renaming would break many call sites
   useOvertimeInPPTUH() {
     return this.overtimeIncludesBonuses || !this.useBonuses;
   }

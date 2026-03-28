@@ -1,4 +1,4 @@
-/* eslint-disable class-methods-use-this */
+ 
 // Parse objects from a JSON file into internal YellowFruit objects
 
 import stringSimilarity from 'string-similarity-js';
@@ -1266,6 +1266,6 @@ function removeYearFromPlayerName(nameRaw: string) {
 /** PlayerAnswerCounts in MODAQ use 'answer' when they should use 'answer_type' */
 function fixModaqAnswerType(pac: IQbjPlayerAnswerCount) {
   if (!pac.answerType) {
-    pac.answerType = (pac as any).answer;
+    pac.answerType = (pac as { answer?: IQbjAnswerType | IQbjRefPointer }).answer!;
   }
 }

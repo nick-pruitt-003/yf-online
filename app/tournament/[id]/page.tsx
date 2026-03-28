@@ -48,6 +48,7 @@ export default async function TournamentPage({ params }: PageProps) {
       tournamentId={id}
       initialData={tournament.data}
       canEdit={canEdit}
+      isOwner={isOwner}
     />
   );
 }

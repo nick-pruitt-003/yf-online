@@ -3,7 +3,7 @@
 import { simpleRoundRobinPrelims } from '../Phase';
 import StandardSchedule from '../StandardSchedule';
 
-// eslint-disable-next-line import/prefer-default-export
+ 
 export const Sched13TeamsSingleRR: StandardSchedule = {
   fullName: '13 Teams - Single Round Robin',
   shortName: 'Single Round Robin',

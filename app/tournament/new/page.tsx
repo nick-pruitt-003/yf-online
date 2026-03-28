@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
 import {
-  Box, Button, TextField, Typography, Paper, CircularProgress,
+  Box, Button, TextField, Typography, Paper, CircularProgress, Divider,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 export default function NewTournamentPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function NewTournamentPage() {
   const [date, setDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +46,44 @@ export default function NewTournamentPage() {
     }
   };
 
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const text = await file.text();
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        throw new Error('File is not valid JSON. Make sure it is a .yft file.');
+      }
+
+      const res = await fetch('/api/tournament/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? 'Failed to import tournament');
+      }
+
+      const { id } = await res.json();
+      router.push(`/tournament/${id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setLoading(false);
+    } finally {
+      // Reset the input so the same file can be re-selected
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
   return (
     <Box maxWidth={560} mx="auto" px={3} py={5}>
       <NextLink href="/dashboard" style={{ textDecoration: 'none' }}>
@@ -54,7 +95,7 @@ export default function NewTournamentPage() {
 
       <Typography variant="h4" fontWeight={700} mb={1}>New Tournament</Typography>
       <Typography color="text.secondary" mb={4}>
-        Create a new YellowFruit tournament. You can edit all settings later.
+        Create a new YellowFruit tournament or import an existing .yft file.
       </Typography>
 
       <Paper elevation={0} variant="outlined" sx={{ p: 3 }}>
@@ -99,6 +140,30 @@ export default function NewTournamentPage() {
             </Box>
           </Box>
         </form>
+
+        <Divider sx={{ my: 3 }}>or</Divider>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".yft,application/json"
+          style={{ display: 'none' }}
+          onChange={handleImport}
+        />
+        <Box textAlign="center">
+          <Button
+            variant="outlined"
+            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <UploadFileIcon />}
+            onClick={() => fileRef.current?.click()}
+            disabled={loading}
+          >
+            Import .yft File
+          </Button>
+          <Typography variant="caption" display="block" color="text.secondary" mt={0.5}>
+            Opens an existing YellowFruit tournament file
+          </Typography>
+        </Box>
       </Paper>
     </Box>
   );

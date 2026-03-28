@@ -1,6 +1,5 @@
 import { Match } from './Match';
 import { Phase } from './Phase';
-import { Pool } from './Pool';
 import { Round } from './Round';
 import { Team } from './Team';
 

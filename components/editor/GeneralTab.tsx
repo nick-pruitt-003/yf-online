@@ -1,8 +1,13 @@
 'use client';
 
-import { Box, Typography, TextField, Checkbox, FormControlLabel, Divider, Paper } from '@mui/material';
+import { Box, Typography, TextField, Checkbox, FormControlLabel, Paper } from '@mui/material';
 import type { TournamentHandle } from '@/lib/yfweb/useTournament';
 import { TournamentSite } from '@/lib/yfdata/TournamentSite';
+import { NullDate } from '@/lib/Utils/UtilTypes';
+
+function dateToInputValue(d: Date): string {
+  return NullDate.isNullDate(d) ? '' : d.toISOString().slice(0, 10);
+}
 
 interface Props {
   handle: TournamentHandle;
@@ -49,8 +54,8 @@ export default function GeneralTab({ handle, canEdit }: Props) {
             }
           }))}
           <Box display="flex" gap={2}>
-            {field('Start Date', t.startDate ?? '', (v) => update((tr) => { tr.startDate = v; }), 'date')}
-            {field('End Date', t.endDate ?? '', (v) => update((tr) => { tr.endDate = v; }), 'date')}
+            {field('Start Date', dateToInputValue(t.startDate), (v) => update((tr) => { tr.startDate = new Date(v); }), 'date')}
+            {field('End Date', dateToInputValue(t.endDate), (v) => update((tr) => { tr.endDate = new Date(v); }), 'date')}
           </Box>
           {field('Question Set', t.questionSet ?? '', (v) => update((tr) => { tr.questionSet = v; }))}
         </Box>

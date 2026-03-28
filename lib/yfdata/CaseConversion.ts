@@ -1,6 +1,6 @@
 // QBJ schema uses a different case for property names than the internal YF data structures do
 
-export function camelCaseToSnakeCase(obj: any) {
+export function camelCaseToSnakeCase(obj: Record<string, unknown>) {
   if (obj == null || typeof obj !== 'object') return;
 
   obj.short_name = obj.shortName;
@@ -130,11 +130,11 @@ export function camelCaseToSnakeCase(obj: any) {
   delete obj.categoryGroup;
 
   for (const key of Object.keys(obj)) {
-    if (obj[key] != null && typeof obj[key] === 'object') camelCaseToSnakeCase(obj[key]);
+    if (obj[key] != null && typeof obj[key] === 'object') camelCaseToSnakeCase(obj[key] as Record<string, unknown>);
   }
 }
 
-export function snakeCaseToCamelCase(obj: any) {
+export function snakeCaseToCamelCase(obj: Record<string, unknown>) {
   if (obj == null || typeof obj !== 'object') return;
 
   obj.shortName = obj.short_name;
@@ -264,6 +264,6 @@ export function snakeCaseToCamelCase(obj: any) {
   delete obj.category_group;
 
   for (const prop in obj) {
-    if (typeof obj[prop] === 'object') snakeCaseToCamelCase(obj[prop]);
+    if (typeof obj[prop] === 'object') snakeCaseToCamelCase(obj[prop] as Record<string, unknown>);
   }
 }

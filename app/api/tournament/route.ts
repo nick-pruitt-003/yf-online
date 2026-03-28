@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import Tournament from '@/lib/yfdata/Tournament';
-import TournamentSite from '@/lib/yfdata/TournamentSite';
+import { TournamentSite } from '@/lib/yfdata/TournamentSite';
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     tournament.tournamentSite = new TournamentSite();
     tournament.tournamentSite.name = siteName.trim();
   }
-  if (date) tournament.startDate = date;
+  if (date) tournament.startDate = new Date(date);
 
   const data = tournament.toFileObject();
 

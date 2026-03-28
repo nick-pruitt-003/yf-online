@@ -117,7 +117,7 @@ export default class SqbsGenerator {
 
   private buildPoolList() {
     this.poolList = [];
-    if (this.useDivisions()) {
+    if (this.hasDivisions()) {
       this.poolList = this.phases[0].pools.slice();
     }
   }
@@ -194,7 +194,7 @@ export default class SqbsGenerator {
     this.addLine(1); // enable individual detail report
     this.addLine(1); // enable stat key
     this.addLine(0); // no custom stylesheet
-    this.addLine(this.useDivisions() ? 1 : 0); // use divisions?
+    this.addLine(this.hasDivisions() ? 1 : 0); // use divisions?
     this.addLine(1); // sort by record, then ppg
 
     this.addLine(this.tournament.name);
@@ -215,7 +215,7 @@ export default class SqbsGenerator {
 
   private addDivisions() {
     // special case- no divisions, every team "assigned" to division "-1"
-    if (!this.useDivisions()) {
+    if (!this.hasDivisions()) {
       this.addLine(0);
       this.addLine(this.teamList.length);
       for (let i = 0; i < this.teamList.length; i++) {
@@ -371,7 +371,7 @@ export default class SqbsGenerator {
     return matchTeam.getCorrectTossupsWithoutBonuses();
   }
 
-  private useDivisions() {
+  private hasDivisions() {
     return this.phases.length === 1 && this.phases[0].pools.length > 1;
   }
 

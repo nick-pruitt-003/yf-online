@@ -1,5 +1,5 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-useless-concat */
+ 
+ 
 import { StatReportPages, StatReportPageOrder, StatReportFileNames } from '../Enums';
 import { LeftOrRight, NullObjects } from '../Utils/UtilTypes';
 import { Match } from './Match';
@@ -9,7 +9,7 @@ import { Phase, PhaseTypes } from './Phase';
 import { Player } from './Player';
 import { Pool } from './Pool';
 import { Round } from './Round';
-// eslint-disable-next-line import/no-cycle
+ 
 import { StatTypes, columnName, columnTooltip } from './StatReportDataTypes';
 import {
   PhaseStandings,
@@ -21,7 +21,7 @@ import {
   TeamDetailMatchResult,
 } from './StatSummaries';
 import { Team } from './Team';
-// eslint-disable-next-line import/no-cycle
+ 
 import Tournament from './Tournament';
 
 export default class HtmlReportGenerator {
@@ -1361,10 +1361,10 @@ function unorderedList(items: string[]) {
   return genericTag('ul', liTags.join('\n'));
 }
 
-function makeAttributeFromObj(obj: any, attrName: string) {
+function makeAttributeFromObj(obj: Record<string, unknown>, attrName: string) {
   const val = obj[attrName];
   if (val === undefined) return '';
-  return makeAttribute(attrName, val);
+  return makeAttribute(attrName, val as string);
 }
 
 function makeAttribute(attrName: string, val: string) {
