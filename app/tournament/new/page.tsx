@@ -55,17 +55,11 @@ export default function NewTournamentPage() {
 
     try {
       const text = await file.text();
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        throw new Error('File is not valid JSON. Make sure it is a .yft file.');
-      }
 
       const res = await fetch('/api/tournament/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsed),
+        body: JSON.stringify({ fileContents: text }),
       });
 
       if (!res.ok) {
