@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from '@mui/icons-material/Download';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import ShareIcon from '@mui/icons-material/Share';
 import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -196,6 +197,30 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     URL.revokeObjectURL(url);
   };
 
+  const [exporting, setExporting] = useState(false);
+
+  const exportReports = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch(`/api/tournament/${tournamentId}/reports`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'Failed to export reports');
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tournament.name || 'tournament'}_reports.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setToast({ msg: err instanceof Error ? err.message : 'Export failed', severity: 'error' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   // ── Save status label ──────────────────────────────────────────────────────
 
   const statusLabel = (() => {
@@ -232,6 +257,14 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
             <IconButton size="small" onClick={exportYft} color="inherit">
               <DownloadIcon fontSize="small" />
             </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Export HTML stat reports (ZIP)">
+            <span>
+              <IconButton size="small" onClick={exportReports} color="inherit" disabled={exporting}>
+                {exporting ? <CircularProgress size={16} color="inherit" /> : <AssessmentIcon fontSize="small" />}
+              </IconButton>
+            </span>
           </Tooltip>
 
           {canEdit && (
