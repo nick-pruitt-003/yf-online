@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { isOldYftFile, parseOldYfFile } from '@/lib/yfdata/OldYfParsing';
 import FileParser from '@/lib/yfdata/FileParsing';
+import { snakeCaseToCamelCase } from '@/lib/yfdata/CaseConversion';
 import { collectRefTargets } from '@/lib/yfdata/QbjUtils2';
 import type { IQbjTournament } from '@/lib/yfdata/Tournament';
 import type { IQbjObject } from '@/lib/yfdata/Interfaces';
@@ -66,6 +67,8 @@ export async function POST(req: NextRequest) {
         tournObj = parsed as IQbjTournament;
         objectList = [tournObj as IQbjObject];
       }
+      // Normalize snake_case keys (from QBJ format) to camelCase before parsing
+      objectList.forEach((o) => snakeCaseToCamelCase(o as Record<string, unknown>));
       const refTargets = collectRefTargets(objectList);
       const parser = new FileParser(refTargets);
       tournament = parser.parseTournament(tournObj);
