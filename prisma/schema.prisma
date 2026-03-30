@@ -85,7 +85,8 @@ model YfTournament {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  shares YfTournamentShare[]
+  shares    YfTournamentShare[]
+  snapshots YfTournamentSnapshot[]
 
   @@index([ownerId])
 }
@@ -101,4 +102,14 @@ model YfTournamentShare {
 
   @@unique([tournamentId, userId])
   @@index([userId])
+}
+
+model YfTournamentSnapshot {
+  id           String       @id @default(cuid())
+  tournamentId String
+  tournament   YfTournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  data         Json
+  createdAt    DateTime     @default(now())
+
+  @@index([tournamentId, createdAt])
 }

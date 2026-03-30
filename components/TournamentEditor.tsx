@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box, AppBar, Toolbar, Typography, Tabs, Tab, Button,
@@ -10,10 +10,11 @@ import {
   ListItemText, ListItemSecondaryAction,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import ShareIcon from '@mui/icons-material/Share';
+import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RestoreIcon from '@mui/icons-material/Restore';
 import { useTournament } from '@/lib/yfweb/useTournament';
 import GeneralTab from '@/components/editor/GeneralTab';
 import TeamsTab from '@/components/editor/TeamsTab';
@@ -41,12 +42,19 @@ interface ShareEntry {
   user: { id: string; name: string; email: string };
 }
 
+interface Snapshot {
+  id: string;
+  createdAt: string;
+}
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 export default function TournamentEditor({ tournamentId, initialData, canEdit, isOwner }: TournamentEditorProps) {
   const handle = useTournament(initialData);
   const { tournament, dirty, clearDirty, serialize } = handle;
 
   const [tab, setTab] = useState<TabName>('General');
-  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [toast, setToast] = useState<{ msg: string; severity: 'success' | 'error' } | null>(null);
 
   // ── Sharing dialog ──────────────────────────────────────────────────────────
@@ -56,6 +64,12 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
   const [shareCanEdit, setShareCanEdit] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
   const [shareError, setShareError] = useState('');
+
+  // ── History dialog ──────────────────────────────────────────────────────────
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
+  const [restoreTarget, setRestoreTarget] = useState<Snapshot | null>(null);
+  const [restoring, setRestoring] = useState(false);
 
   const openShareDialog = async () => {
     setShareOpen(true);
@@ -107,11 +121,40 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     }
   };
 
+  const openHistoryDialog = async () => {
+    setHistoryOpen(true);
+    try {
+      const res = await fetch(`/api/tournament/${tournamentId}/snapshots`);
+      if (res.ok) setSnapshots(await res.json());
+    } catch {
+      // ignore
+    }
+  };
+
+  const restoreSnapshot = async () => {
+    if (!restoreTarget) return;
+    setRestoring(true);
+    try {
+      const res = await fetch(`/api/tournament/${tournamentId}/snapshots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ snapshotId: restoreTarget.id }),
+      });
+      if (!res.ok) throw new Error('Restore failed');
+      // Reload the page so the restored data is loaded fresh.
+      window.location.reload();
+    } catch {
+      setToast({ msg: 'Failed to restore version', severity: 'error' });
+      setRestoring(false);
+      setRestoreTarget(null);
+    }
+  };
+
   // ── Save ───────────────────────────────────────────────────────────────────
 
   const save = useCallback(async () => {
     if (!canEdit || !dirty) return;
-    setSaving(true);
+    setSaveStatus('saving');
     try {
       const data = serialize();
       const res = await fetch(`/api/tournament/${tournamentId}`, {
@@ -121,13 +164,25 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
       });
       if (!res.ok) throw new Error('Save failed');
       clearDirty();
-      setToast({ msg: 'Saved', severity: 'success' });
+      setSaveStatus('saved');
     } catch {
-      setToast({ msg: 'Failed to save', severity: 'error' });
-    } finally {
-      setSaving(false);
+      setSaveStatus('error');
+      setToast({ msg: 'Autosave failed', severity: 'error' });
     }
   }, [tournamentId, dirty, canEdit, serialize, clearDirty, tournament.name]);
+
+  // ── Autosave: 2 s debounce after each change ────────────────────────────────
+
+  const versionRef = useRef(handle.version);
+  useEffect(() => {
+    if (!canEdit || !dirty) return;
+    versionRef.current = handle.version;
+    const timeout = setTimeout(() => {
+      if (versionRef.current === handle.version) save();
+    }, 2000);
+    return () => clearTimeout(timeout);
+  // eslint-disable-next-line @eslint-react/exhaustive-deps -- handle.version is the change signal
+  }, [handle.version, canEdit, dirty, save]);
 
   // ── Export ─────────────────────────────────────────────────────────────────
 
@@ -140,6 +195,15 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  // ── Save status label ──────────────────────────────────────────────────────
+
+  const statusLabel = (() => {
+    if (saveStatus === 'saving') return 'Saving…';
+    if (saveStatus === 'saved' && !dirty) return 'Saved';
+    if (dirty) return 'Unsaved';
+    return null;
+  })();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -156,7 +220,13 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
           </Typography>
 
           {!canEdit && <Chip label="Read only" size="small" variant="outlined" />}
-          {dirty && <Chip label="Unsaved" size="small" color="warning" variant="outlined" />}
+
+          {statusLabel && (
+            <Typography variant="caption" sx={{ opacity: 0.8, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {saveStatus === 'saving' && <CircularProgress size={10} color="inherit" />}
+              {statusLabel}
+            </Typography>
+          )}
 
           <Tooltip title="Export .yft file">
             <IconButton size="small" onClick={exportYft} color="inherit">
@@ -164,26 +234,20 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
             </IconButton>
           </Tooltip>
 
+          {canEdit && (
+            <Tooltip title="Version history">
+              <IconButton size="small" onClick={openHistoryDialog} color="inherit">
+                <HistoryIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+
           {isOwner && (
             <Tooltip title="Share tournament">
               <IconButton size="small" onClick={openShareDialog} color="inherit">
                 <ShareIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-          )}
-
-          {canEdit && (
-            <Button
-              size="small"
-              color="inherit"
-              variant="outlined"
-              startIcon={saving ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />}
-              onClick={save}
-              disabled={saving || !dirty}
-              sx={dirty ? { borderColor: 'white', fontWeight: 700 } : { borderColor: 'rgba(255,255,255,0.5)' }}
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </Button>
           )}
         </Toolbar>
 
@@ -270,6 +334,57 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShareOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── History dialog ── */}
+      <Dialog open={historyOpen} onClose={() => { setHistoryOpen(false); setRestoreTarget(null); }} maxWidth="sm" fullWidth>
+        <DialogTitle>Version History</DialogTitle>
+        <DialogContent>
+          {snapshots.length === 0 ? (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              No saved versions yet. Versions are captured automatically as you edit.
+            </Typography>
+          ) : (
+            <List dense disablePadding sx={{ mt: 1 }}>
+              {snapshots.map((snap) => (
+                <ListItem key={snap.id} disablePadding sx={{ py: 0.5 }}>
+                  <ListItemText
+                    primary={new Date(snap.createdAt).toLocaleString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric',
+                      hour: 'numeric', minute: '2-digit',
+                    })}
+                  />
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Restore this version">
+                      <IconButton size="small" onClick={() => setRestoreTarget(snap)}>
+                        <RestoreIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setHistoryOpen(false); setRestoreTarget(null); }}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Restore confirm dialog ── */}
+      <Dialog open={!!restoreTarget} onClose={() => setRestoreTarget(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Restore this version?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Your current state will be saved as a version before restoring, so you can undo if needed.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRestoreTarget(null)}>Cancel</Button>
+          <Button variant="contained" onClick={restoreSnapshot} disabled={restoring}>
+            {restoring ? <CircularProgress size={16} color="inherit" /> : 'Restore'}
+          </Button>
         </DialogActions>
       </Dialog>
 

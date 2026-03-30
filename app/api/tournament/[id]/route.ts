@@ -71,10 +71,37 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       ...(data !== undefined && { data: data as object }),
       ...(name !== undefined && { name }),
     },
-    select: { id: true, name: true, updatedAt: true },
+    select: { id: true, name: true, updatedAt: true, data: true },
   });
 
-  return NextResponse.json(updated);
+  // Create a snapshot if data changed and last snapshot is >5 min old (or none exists).
+  if (data !== undefined) {
+    const latest = await prisma.yfTournamentSnapshot.findFirst({
+      where: { tournamentId: id },
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true },
+    });
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+    if (!latest || latest.createdAt < fiveMinAgo) {
+      await prisma.yfTournamentSnapshot.create({
+        data: { tournamentId: id, data: updated.data as object },
+      });
+      // Keep only the 20 most recent snapshots.
+      const old = await prisma.yfTournamentSnapshot.findMany({
+        where: { tournamentId: id },
+        orderBy: { createdAt: 'desc' },
+        skip: 20,
+        select: { id: true },
+      });
+      if (old.length > 0) {
+        await prisma.yfTournamentSnapshot.deleteMany({
+          where: { id: { in: old.map((s) => s.id) } },
+        });
+      }
+    }
+  }
+
+  return NextResponse.json({ id: updated.id, name: updated.name, updatedAt: updated.updatedAt });
 }
 
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
