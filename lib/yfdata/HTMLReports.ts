@@ -374,6 +374,7 @@ export default class HtmlReportGenerator {
     this.pushTossupValueHeaders(cells);
     cells.push(stdTdHeader(this.abbr(StatTypes.tuh), true));
     cells.push(stdTdHeader(this.abbr(StatTypes.pointsPerXTuh), true));
+    cells.push(stdTdHeader('PPG', true));
 
     return trTag(cells);
   }
@@ -400,6 +401,11 @@ export default class HtmlReportGenerator {
         pptuh !== undefined ? (pptuh * this.tournament.scoringRules.regulationTossupCount).toFixed(2) : mDashHtml,
       ),
     );
+
+    const ppg = playerStats.gamesPlayed > 0
+      ? (playerStats.getTotalPoints() / playerStats.gamesPlayed).toFixed(2)
+      : mDashHtml;
+    cells.push(tdTag({ align: 'right' }, ppg));
 
     return trTag(cells);
   }
