@@ -7,6 +7,7 @@ import FileParser from '@/lib/yfdata/FileParsing';
 import { collectRefTargets } from '@/lib/yfdata/QbjUtils2';
 import type { IQbjTournament } from '@/lib/yfdata/Tournament';
 import type { IQbjObject } from '@/lib/yfdata/Interfaces';
+import { QbjTypeNames } from '@/lib/yfdata/QbjEnums';
 import Tournament from '@/lib/yfdata/Tournament';
 
 export async function POST(req: NextRequest) {
@@ -48,10 +49,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid .yft data' }, { status: 400 });
     }
     try {
-      const obj = parsed as IQbjTournament;
-      const refTargets = collectRefTargets([obj as IQbjObject]);
+      // v4 files are either a single tournament object OR a QBJ wrapper { version, objects: [...] }
+      let tournObj: IQbjTournament;
+      let objectList: IQbjObject[];
+      if (
+        typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) &&
+        'objects' in parsed && Array.isArray((parsed as Record<string, unknown>).objects)
+      ) {
+        // QBJ multi-object format: { version, objects: [...] }
+        objectList = (parsed as { objects: IQbjObject[] }).objects;
+        const found = objectList.find((o) => o.type === QbjTypeNames.Tournament) as IQbjTournament | undefined;
+        if (!found) throw new Error('No Tournament object found in file');
+        tournObj = found;
+      } else {
+        // Single tournament object (yf-online internal format)
+        tournObj = parsed as IQbjTournament;
+        objectList = [tournObj as IQbjObject];
+      }
+      const refTargets = collectRefTargets(objectList);
       const parser = new FileParser(refTargets);
-      tournament = parser.parseTournament(obj);
+      tournament = parser.parseTournament(tournObj);
     } catch (err) {
       return NextResponse.json(
         { error: `Failed to parse v4 .yft file: ${err instanceof Error ? err.message : 'unknown error'}` },
