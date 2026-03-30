@@ -1300,7 +1300,8 @@ function getPageStyle() {
 /** An <a> tag for hyperlinks */
 function aTag(href: string, contents: string, newTab?: boolean) {
   if (newTab) return `<a href="${href}" target="_blank" rel="noopener noreferrer">${contents}</a>`;
-  return `<a href="${href}">${contents}</a>`;
+  // Use unquoted uppercase HREF= to match the format hsquizbowl expects
+  return `<a HREF=${href}>${contents}</a>`;
 }
 
 function tableTag(trTags: string[], width?: string, cssClass?: string, border?: string) {

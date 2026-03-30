@@ -188,7 +188,10 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
   // ── Export ─────────────────────────────────────────────────────────────────
 
   const exportYft = () => {
-    const blob = new Blob([JSON.stringify(serialize(), null, 2)], { type: 'application/json' });
+    // Wrap in QBJ file format { version, objects: [...] } so hsquizbowl
+    // recognises it as a valid YellowFruit data file
+    const fileObj = { version: '2.1', objects: [serialize()] };
+    const blob = new Blob([JSON.stringify(fileObj, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
