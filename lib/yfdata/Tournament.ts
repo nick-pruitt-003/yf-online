@@ -172,7 +172,7 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
     if (qbjOnly) return qbjObject;
 
     const metadata: ITournamentExtraData = {
-      YfVersion: this.appVersion,
+      YfVersion: this.appVersion || '4.0.12',
       standardRuleSet: this.standardRuleSet,
       seeds: this.seeds.map((team) => team.toRefPointer()),
       trackPlayerYear: this.trackPlayerYear,

@@ -126,7 +126,7 @@ export default function StatsTab({ handle }: Props) {
                       {hasNegs && <TableCell align="right" sx={{ fontWeight: 700 }}>Neg</TableCell>}
                       <TableCell align="right" sx={{ fontWeight: 700 }}>TUH</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 700 }}>Pts</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 700 }}>Pts/TUH</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 700 }}>PPG</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -138,7 +138,9 @@ export default function StatsTab({ handle }: Props) {
                       const negs = hasNegs
                         ? ps.tossupCounts.filter((ac) => ac.answerType?.isNeg).reduce((s, ac) => s + (ac.number ?? 0), 0)
                         : null;
-                      const pptuh = ps.getPptuh();
+                      const ppg = ps.gamesPlayed > 0
+                        ? (ps.getTotalPoints() / ps.gamesPlayed).toFixed(2)
+                        : '—';
                       return (
                         <TableRow key={`${ps.player.name}-${ps.team.name}`} hover>
                           <TableCell sx={{ fontWeight: 600 }}>{ps.player.name}</TableCell>
@@ -149,9 +151,7 @@ export default function StatsTab({ handle }: Props) {
                           {hasNegs && <TableCell align="right">{negs}</TableCell>}
                           <TableCell align="right">{ps.tossupsHeard}</TableCell>
                           <TableCell align="right">{ps.getTotalPoints()}</TableCell>
-                          <TableCell align="right">
-                            {pptuh !== undefined ? pptuh.toFixed(2) : '—'}
-                          </TableCell>
+                          <TableCell align="right">{ppg}</TableCell>
                         </TableRow>
                       );
                     })}
