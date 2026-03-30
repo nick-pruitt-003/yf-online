@@ -29,11 +29,6 @@ export default class HtmlReportGenerator {
 
   filePrefix: string = '';
 
-  /** When set, nav/data links use the hsquizbowl tournament path instead of local filenames.
-   *  e.g. "tournaments/10411/stats/all_games/" so links resolve correctly under
-   *  hsquizbowl's injected <base href="https://hsquizbowl.org/db/"> */
-  hsqbBasePath: string = '';
-
   phaseColors: { phase: Phase; color: string }[] = [];
 
   constructor(tourn: Tournament) {
@@ -42,23 +37,6 @@ export default class HtmlReportGenerator {
 
   setFilePrefix(prefix?: string) {
     this.filePrefix = prefix ? `${prefix}_` : '';
-  }
-
-  /** Set the hsquizbowl tournament stats base path.
-   *  Accepts:
-   *  - A numeric tournament ID: "8511" → "tournaments/8511/stats/all_games/"
-   *  - A full stats URL: "https://hsquizbowl.org/db/tournaments/8511/stats/all_games/"
-   *  - A relative path: "tournaments/8511/stats/all_games/" */
-  setHsqbBasePath(idOrUrlOrPath: string) {
-    const val = idOrUrlOrPath.trim();
-    if (/^\d+$/.test(val)) {
-      // Pure numeric ID — build the standard path
-      this.hsqbBasePath = `tournaments/${val}/stats/all_games/`;
-      return;
-    }
-    const dbBase = 'https://hsquizbowl.org/db/';
-    const path = val.startsWith(dbBase) ? val.slice(dbBase.length) : val.replace(/^\/+/, '');
-    this.hsqbBasePath = path.endsWith('/') ? path : `${path}/`;
   }
 
   // Public functions for generating entire pages
@@ -1109,10 +1087,6 @@ export default class HtmlReportGenerator {
   }
 
   private fileNameForLink(page: StatReportPages) {
-    if (this.hsqbBasePath) {
-      const pageName = StatReportFileNames[page].replace('.html', '');
-      return `${this.hsqbBasePath}${pageName}/`;
-    }
     return `${this.filePrefix}${StatReportFileNames[page]}`;
   }
 

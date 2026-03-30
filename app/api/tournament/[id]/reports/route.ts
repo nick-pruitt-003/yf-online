@@ -76,9 +76,6 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 
   await tournament.setHtmlFilePrefix(safeName);
 
-  const hsqbUrl = req.nextUrl.searchParams.get('hsqbUrl');
-  if (hsqbUrl) await tournament.setHsqbBasePath(hsqbUrl);
-
   // Single-page download: ?page=standings|individuals|games|teamdetail|playerdetail|rounds
   const pageKey = req.nextUrl.searchParams.get('page');
   if (pageKey) {

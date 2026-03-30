@@ -237,11 +237,6 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
     gen.setFilePrefix(prefix);
   }
 
-  async setHsqbBasePath(urlOrPath: string) {
-    const gen = await this.getHtmlGenerator();
-    gen.setHsqbBasePath(urlOrPath);
-  }
-
   async makeHtmlStandings() {
     return (await this.getHtmlGenerator()).generateStandingsPage();
   }
