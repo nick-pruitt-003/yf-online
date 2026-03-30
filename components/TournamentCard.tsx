@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import NextLink from 'next/link';
 import { Box, Paper, Typography, Chip } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props) {
-  const date = new Date(updatedAt);
+  const date = useMemo(() => new Date(updatedAt), [updatedAt]);
   return (
     <Paper
       component={NextLink}
