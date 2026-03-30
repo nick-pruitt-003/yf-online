@@ -1207,7 +1207,7 @@ function alphaOnly(str: string) {
 
 /** Header at the top of the html document */
 function getHtmlHeader(pageTitle: string) {
-  return genericTag('HEAD', genericTag('title', pageTitle));
+  return genericTag('HEAD', '<link rel="stylesheet" HREF="hsqb-style.css">', genericTag('title', pageTitle));
 }
 
 function getPageStyle() {

@@ -9,11 +9,29 @@ import type { IQbjTournament } from '@/lib/yfdata/Tournament';
 import type { IQbjObject } from '@/lib/yfdata/Interfaces';
 import { StatReportFileNames, StatReportPages } from '@/lib/Enums';
 
+const PAGE_GENERATORS: Record<string, [StatReportPages, (t: Awaited<ReturnType<typeof buildTournament>>) => Promise<string>]> = {
+  standings:    [StatReportPages.Standings,     (t) => t.makeHtmlStandings()],
+  individuals:  [StatReportPages.Individuals,   (t) => t.makeHtmlIndividuals()],
+  games:        [StatReportPages.Scoreboard,    (t) => t.makeHtmlScoreboard()],
+  teamdetail:   [StatReportPages.TeamDetails,   (t) => t.makeHtmlTeamDetail()],
+  playerdetail: [StatReportPages.PlayerDetails, (t) => t.makeHtmlPlayerDetail()],
+  rounds:       [StatReportPages.RoundReport,   (t) => t.makeHtmlRoundReport()],
+};
+
+async function buildTournament(data: object) {
+  const obj = data as unknown as IQbjTournament;
+  const refTargets = collectRefTargets([obj as IQbjObject]);
+  const parser = new FileParser(refTargets);
+  const tournament = parser.parseTournament(obj);
+  tournament.compileStats(true);
+  return tournament;
+}
+
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(_req: NextRequest, { params }: RouteContext) {
+export async function GET(req: NextRequest, { params }: RouteContext) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -39,13 +57,16 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ error: 'Invalid tournament data' }, { status: 400 });
   }
 
-  // Parse tournament
+  // Build a safe file prefix from the tournament name
+  const safeName = (record.name || 'tournament')
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+
+  // Parse & compile tournament
   let tournament;
   try {
-    const obj = record.data as unknown as IQbjTournament;
-    const refTargets = collectRefTargets([obj as IQbjObject]);
-    const parser = new FileParser(refTargets);
-    tournament = parser.parseTournament(obj);
+    tournament = await buildTournament(record.data as object);
   } catch (err) {
     return NextResponse.json(
       { error: `Failed to parse tournament: ${err instanceof Error ? err.message : 'unknown error'}` },
@@ -53,18 +74,26 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
     );
   }
 
-  // Compile stats
-  tournament.compileStats(true);
-
-  // Build a safe file prefix from the tournament name
-  const safeName = (record.name || 'tournament')
-    .replace(/[^a-zA-Z0-9_-]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-
   await tournament.setHtmlFilePrefix(safeName);
 
-  // Generate all 6 HTML pages
+  // Single-page download: ?page=standings|individuals|games|teamdetail|playerdetail|rounds
+  const pageKey = req.nextUrl.searchParams.get('page');
+  if (pageKey) {
+    const entry = PAGE_GENERATORS[pageKey];
+    if (!entry) return NextResponse.json({ error: 'Unknown page' }, { status: 400 });
+    const [pageEnum, generate] = entry;
+    const html = await generate(tournament);
+    const filename = `${safeName}_${StatReportFileNames[pageEnum]}`;
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+      },
+    });
+  }
+
+  // ZIP of all 6 pages
   const pages: [StatReportPages, () => Promise<string>][] = [
     [StatReportPages.Standings,     () => tournament.makeHtmlStandings()],
     [StatReportPages.Individuals,   () => tournament.makeHtmlIndividuals()],

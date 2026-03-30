@@ -9,6 +9,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "prisma migrate deploy && next start -p ${PORT:-3000}",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio"

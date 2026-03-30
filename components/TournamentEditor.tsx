@@ -7,7 +7,7 @@ import {
   Chip, Snackbar, Alert, IconButton, Tooltip, CircularProgress,
   Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, FormControlLabel, Checkbox, List, ListItem,
-  ListItemText, ListItemSecondaryAction,
+  ListItemText, ListItemSecondaryAction, Divider,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -197,29 +197,51 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     URL.revokeObjectURL(url);
   };
 
-  const [exporting, setExporting] = useState(false);
+  // ── HTML report export dialog ──────────────────────────────────────────────
 
-  const exportReports = async () => {
-    setExporting(true);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [exporting, setExporting] = useState<string | null>(null); // null = idle, 'zip' = zip, or page key
+
+  const HTML_PAGES = [
+    { key: 'standings',    label: 'Standings' },
+    { key: 'individuals',  label: 'Individuals' },
+    { key: 'games',        label: 'Scoreboard' },
+    { key: 'teamdetail',   label: 'Team Detail' },
+    { key: 'playerdetail', label: 'Player Detail' },
+    { key: 'rounds',       label: 'Round Report' },
+  ] as const;
+
+  const downloadFile = async (url: string, filename: string, key: string) => {
+    setExporting(key);
     try {
-      const res = await fetch(`/api/tournament/${tournamentId}/reports`);
+      const res = await fetch(url);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to export reports');
+        throw new Error(data.error ?? 'Download failed');
       }
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+      const objUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `${tournament.name || 'tournament'}_reports.zip`;
+      a.href = objUrl;
+      a.download = filename;
       a.click();
-      URL.revokeObjectURL(url);
+      URL.revokeObjectURL(objUrl);
     } catch (err) {
       setToast({ msg: err instanceof Error ? err.message : 'Export failed', severity: 'error' });
     } finally {
-      setExporting(false);
+      setExporting(null);
     }
   };
+
+  const safeName = tournament.name
+    ? tournament.name.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')
+    : 'tournament';
+
+  const downloadAllZip = () =>
+    downloadFile(`/api/tournament/${tournamentId}/reports`, `${safeName}_reports.zip`, 'zip');
+
+  const downloadPage = (key: string) =>
+    downloadFile(`/api/tournament/${tournamentId}/reports?page=${key}`, `${safeName}_${key}.html`, key);
 
   // ── Save status label ──────────────────────────────────────────────────────
 
@@ -259,12 +281,10 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Export HTML stat reports (ZIP)">
-            <span>
-              <IconButton size="small" onClick={exportReports} color="inherit" disabled={exporting}>
-                {exporting ? <CircularProgress size={16} color="inherit" /> : <AssessmentIcon fontSize="small" />}
-              </IconButton>
-            </span>
+          <Tooltip title="Export HTML stat reports">
+            <IconButton size="small" onClick={() => setReportDialogOpen(true)} color="inherit">
+              <AssessmentIcon fontSize="small" />
+            </IconButton>
           </Tooltip>
 
           {canEdit && (
@@ -418,6 +438,65 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
           <Button variant="contained" onClick={restoreSnapshot} disabled={restoring}>
             {restoring ? <CircularProgress size={16} color="inherit" /> : 'Restore'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── HTML stat report export dialog ── */}
+      <Dialog open={reportDialogOpen} onClose={() => setReportDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Export HTML Stat Reports</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Download the 6 HTML files and the data (.yft) file, then upload them all at once
+            on hsquizbowl using the <strong>Choose Files</strong> picker.
+          </Typography>
+          <Divider sx={{ my: 1.5 }} />
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+            HTML pages
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            {HTML_PAGES.map(({ key, label }) => (
+              <Button
+                key={key}
+                size="small"
+                variant="outlined"
+                disabled={exporting === key}
+                onClick={() => downloadPage(key)}
+                sx={{ justifyContent: 'flex-start' }}
+              >
+                {exporting === key ? <CircularProgress size={14} sx={{ mr: 1 }} /> : null}
+                {label}
+              </Button>
+            ))}
+          </Box>
+          <Divider sx={{ my: 1.5 }} />
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+            Data file
+          </Typography>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={exportYft}
+            sx={{ justifyContent: 'flex-start', width: '100%' }}
+          >
+            {tournament.name || 'tournament'}.yft
+          </Button>
+          <Divider sx={{ my: 1.5 }} />
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+            Or download all HTML files as a ZIP (unzip before uploading)
+          </Typography>
+          <Button
+            size="small"
+            variant="outlined"
+            fullWidth
+            disabled={exporting === 'zip'}
+            onClick={downloadAllZip}
+          >
+            {exporting === 'zip' ? <CircularProgress size={14} sx={{ mr: 1 }} /> : null}
+            Download ZIP
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setReportDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 
