@@ -141,7 +141,7 @@ export default function NewTournamentPage() {
         <input
           ref={fileRef}
           type="file"
-          accept=".yft,application/json"
+          accept=".yft"
           style={{ display: 'none' }}
           onChange={handleImport}
         />
