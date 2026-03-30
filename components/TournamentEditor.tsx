@@ -204,6 +204,7 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
 
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null); // null = idle, 'zip' = zip, or page key
+  const [hsqbStatsUrl, setHsqbStatsUrl] = useState(''); // e.g. https://hsquizbowl.org/db/tournaments/8511/stats/all_games/
 
   const HTML_PAGES = [
     { key: 'standings',    label: 'Standings' },
@@ -240,11 +241,13 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     ? tournament.name.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')
     : 'tournament';
 
+  const hsqbParam = hsqbStatsUrl.trim() ? `&hsqbUrl=${encodeURIComponent(hsqbStatsUrl.trim())}` : '';
+
   const downloadAllZip = () =>
-    downloadFile(`/api/tournament/${tournamentId}/reports`, `${safeName}_reports.zip`, 'zip');
+    downloadFile(`/api/tournament/${tournamentId}/reports?x=1${hsqbParam}`, `${safeName}_reports.zip`, 'zip');
 
   const downloadPage = (key: string) =>
-    downloadFile(`/api/tournament/${tournamentId}/reports?page=${key}`, `${safeName}_${key}.html`, key);
+    downloadFile(`/api/tournament/${tournamentId}/reports?page=${key}${hsqbParam}`, `${safeName}_${key}.html`, key);
 
   // ── Save status label ──────────────────────────────────────────────────────
 
@@ -448,10 +451,20 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
       <Dialog open={reportDialogOpen} onClose={() => setReportDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Export HTML Stat Reports</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ mb: 1 }}>
+          <Typography variant="body2" sx={{ mb: 1.5 }}>
             Download the 6 HTML files and the data (.yft) file, then upload them all at once
             on hsquizbowl using the <strong>Choose Files</strong> picker.
           </Typography>
+          <TextField
+            label="hsquizbowl Stats URL"
+            placeholder="https://hsquizbowl.org/db/tournaments/8511/stats/all_games/"
+            value={hsqbStatsUrl}
+            onChange={(e) => setHsqbStatsUrl(e.target.value)}
+            fullWidth
+            size="small"
+            helperText="Paste your tournament's stats URL so nav links work correctly on hsquizbowl."
+            sx={{ mb: 1.5 }}
+          />
           <Divider sx={{ my: 1.5 }} />
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
             HTML pages
