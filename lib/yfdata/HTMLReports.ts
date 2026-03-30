@@ -44,12 +44,20 @@ export default class HtmlReportGenerator {
     this.filePrefix = prefix ? `${prefix}_` : '';
   }
 
-  /** Set the hsquizbowl tournament stats base path from its full URL.
-   *  Accepts the full URL (https://hsquizbowl.org/db/tournaments/10411/stats/all_games/)
-   *  or just the relative path (tournaments/10411/stats/all_games/). */
-  setHsqbBasePath(urlOrPath: string) {
+  /** Set the hsquizbowl tournament stats base path.
+   *  Accepts:
+   *  - A numeric tournament ID: "8511" → "tournaments/8511/stats/all_games/"
+   *  - A full stats URL: "https://hsquizbowl.org/db/tournaments/8511/stats/all_games/"
+   *  - A relative path: "tournaments/8511/stats/all_games/" */
+  setHsqbBasePath(idOrUrlOrPath: string) {
+    const val = idOrUrlOrPath.trim();
+    if (/^\d+$/.test(val)) {
+      // Pure numeric ID — build the standard path
+      this.hsqbBasePath = `tournaments/${val}/stats/all_games/`;
+      return;
+    }
     const dbBase = 'https://hsquizbowl.org/db/';
-    const path = urlOrPath.startsWith(dbBase) ? urlOrPath.slice(dbBase.length) : urlOrPath.replace(/^\/+/, '');
+    const path = val.startsWith(dbBase) ? val.slice(dbBase.length) : val.replace(/^\/+/, '');
     this.hsqbBasePath = path.endsWith('/') ? path : `${path}/`;
   }
 
@@ -72,7 +80,7 @@ export default class HtmlReportGenerator {
   }
 
   generatePlayerDetailPage() {
-    return this.generateHtmlPage('Player Detail', this.getPlayerDetailHtml());
+    return this.generateHtmlPage('Individual Detail', this.getPlayerDetailHtml());
   }
 
   generateRoundReportPage() {
@@ -1176,7 +1184,7 @@ const StatReportPageTitles = {
   [StatReportPages.Individuals]: 'Individuals',
   [StatReportPages.Scoreboard]: 'Scoreboard',
   [StatReportPages.TeamDetails]: 'Team Detail',
-  [StatReportPages.PlayerDetails]: 'Player Detail',
+  [StatReportPages.PlayerDetails]: 'Individual Detail',
   [StatReportPages.RoundReport]: 'Round Report',
 };
 
