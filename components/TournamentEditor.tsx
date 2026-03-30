@@ -143,10 +143,10 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="sticky" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper', color: 'text.primary' }}>
+      <AppBar position="sticky">
         <Toolbar variant="dense" sx={{ gap: 1 }}>
           <Tooltip title="Back to dashboard">
-            <IconButton component={NextLink} href="/dashboard" size="small" edge="start">
+            <IconButton component={NextLink} href="/dashboard" size="small" edge="start" color="inherit">
               <ArrowBackIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -159,14 +159,14 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
           {dirty && <Chip label="Unsaved" size="small" color="warning" variant="outlined" />}
 
           <Tooltip title="Export .yft file">
-            <IconButton size="small" onClick={exportYft}>
+            <IconButton size="small" onClick={exportYft} color="inherit">
               <DownloadIcon fontSize="small" />
             </IconButton>
           </Tooltip>
 
           {isOwner && (
             <Tooltip title="Share tournament">
-              <IconButton size="small" onClick={openShareDialog}>
+              <IconButton size="small" onClick={openShareDialog} color="inherit">
                 <ShareIcon fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -175,10 +175,12 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
           {canEdit && (
             <Button
               size="small"
-              variant={dirty ? 'contained' : 'outlined'}
+              color="inherit"
+              variant="outlined"
               startIcon={saving ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />}
               onClick={save}
               disabled={saving || !dirty}
+              sx={dirty ? { borderColor: 'white', fontWeight: 700 } : { borderColor: 'rgba(255,255,255,0.5)' }}
             >
               {saving ? 'Saving…' : 'Save'}
             </Button>
@@ -190,6 +192,8 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
           onChange={(_, v: TabName) => setTab(v)}
           variant="scrollable"
           scrollButtons="auto"
+          textColor="inherit"
+          TabIndicatorProps={{ style: { backgroundColor: 'white' } }}
           sx={{ minHeight: 40, px: 2, '& .MuiTab-root': { minHeight: 40, py: 0 } }}
         >
           {TABS.map((t) => <Tab key={t} label={t} value={t} />)}

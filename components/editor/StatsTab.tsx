@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import {
-  Box, Typography, Paper, Table, TableBody, TableCell,
+  Box, Typography, Card, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Alert,
 } from '@mui/material';
 import type { TournamentHandle } from '@/lib/yfweb/useTournament';
@@ -41,9 +41,9 @@ export default function StatsTab({ handle }: Props) {
         <Box key={phaseSt.phase.name}>
           <Typography variant="h6" fontWeight={700} mb={2}>{phaseSt.phase.name}</Typography>
           {phaseSt.pools.map((poolSt) => (
-            <Paper key={poolSt.pool.name} elevation={0} variant="outlined" sx={{ mb: 2 }}>
+            <Card key={poolSt.pool.name} sx={{ mb: 2 }}>
               {phaseSt.pools.length > 1 && (
-                <Box px={2} py={1} sx={{ bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider' }}>
+                <Box px={2} py={1} sx={{ bgcolor: 'grey.100', borderBottom: 1, borderColor: 'divider' }}>
                   <Typography variant="subtitle2" fontWeight={600}>{poolSt.pool.name}</Typography>
                 </Box>
               )}
@@ -77,7 +77,7 @@ export default function StatsTab({ handle }: Props) {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Paper>
+            </Card>
           ))}
         </Box>
       ))}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  Box, Typography, Button, Paper, Chip, IconButton, TextField,
+  Box, Typography, Button, Card, CardContent, Chip, IconButton, TextField,
   Dialog, DialogTitle, DialogContent, DialogActions,
   List, ListItem, ListItemText, ListItemSecondaryAction,
   Select, MenuItem, FormControl, InputLabel, Divider,
@@ -193,7 +193,8 @@ export default function ScheduleTab({ handle, canEdit }: Props) {
       ) : (
         <Box display="flex" flexDirection="column" gap={2}>
           {phases.map((phase) => (
-            <Paper key={phase.name} variant="outlined" sx={{ p: 2 }}>
+            <Card key={phase.name}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box display="flex" alignItems="center" gap={1} mb={1}>
                 <Chip
                   label={phaseTypeLabel[phase.phaseType]}
@@ -267,7 +268,8 @@ export default function ScheduleTab({ handle, canEdit }: Props) {
                   )}
                 </>
               )}
-            </Paper>
+              </CardContent>
+            </Card>
           ))}
         </Box>
       )}

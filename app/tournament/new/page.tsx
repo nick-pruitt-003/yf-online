@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NextLink from 'next/link';
 import {
-  Box, Button, TextField, Typography, Paper, CircularProgress, Divider,
+  Box, Button, TextField, Typography, Card, CardContent, CircularProgress, Divider,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -98,7 +98,7 @@ export default function NewTournamentPage() {
         Create a new YellowFruit tournament or import an existing .yft file.
       </Typography>
 
-      <Paper elevation={0} variant="outlined" sx={{ p: 3 }}>
+      <Card><CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
         <form onSubmit={handleSubmit}>
           <Box display="flex" flexDirection="column" gap={2.5}>
             <TextField
@@ -164,7 +164,7 @@ export default function NewTournamentPage() {
             Opens an existing YellowFruit tournament file
           </Typography>
         </Box>
-      </Paper>
+      </CardContent></Card>
     </Box>
   );
 }

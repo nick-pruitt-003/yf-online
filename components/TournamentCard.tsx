@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import NextLink from 'next/link';
-import { Box, Paper, Typography, Chip } from '@mui/material';
+import { Box, Card, Typography, Chip } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 interface Props {
@@ -15,11 +15,10 @@ interface Props {
 export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props) {
   const date = useMemo(() => new Date(updatedAt), [updatedAt]);
   return (
-    <Paper
+    <Card
       component={NextLink}
       href={`/tournament/${id}`}
-      elevation={0}
-      variant="outlined"
+      elevation={1}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -28,8 +27,8 @@ export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props)
         py: 2,
         mb: 1.5,
         textDecoration: 'none',
-        transition: 'border-color 0.15s, box-shadow 0.15s',
-        '&:hover': { borderColor: 'primary.main', boxShadow: 1 },
+        transition: 'box-shadow 0.15s',
+        '&:hover': { boxShadow: 3 },
       }}
     >
       <EmojiEventsIcon color="primary" />
@@ -41,6 +40,6 @@ export default function TournamentCard({ id, name, updatedAt, sharedBy }: Props)
         </Typography>
       </Box>
       {sharedBy && <Chip label="Shared" size="small" variant="outlined" />}
-    </Paper>
+    </Card>
   );
 }

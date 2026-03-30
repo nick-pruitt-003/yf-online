@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  Box, Typography, Button, Paper, IconButton, TextField,
+  Box, Typography, Button, Card, CardContent, IconButton, TextField,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Select, MenuItem, FormControl, InputLabel, Tooltip,
   Table, TableBody, TableCell, TableHead, TableRow,
@@ -169,7 +169,8 @@ export default function GamesTab({ handle, canEdit }: Props) {
           {activePhase.rounds.map((round) => {
             const matchCount = round.matches.length;
             return (
-              <Paper key={round.number} variant="outlined" sx={{ p: 2 }}>
+              <Card key={round.number}>
+                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
                   <Typography fontWeight={600}>
                     Round {round.name}
@@ -235,7 +236,8 @@ export default function GamesTab({ handle, canEdit }: Props) {
                     </TableBody>
                   </Table>
                 )}
-              </Paper>
+                </CardContent>
+              </Card>
             );
           })}
         </Box>

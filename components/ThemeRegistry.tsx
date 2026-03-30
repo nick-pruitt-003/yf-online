@@ -6,8 +6,7 @@ import { ReactNode } from 'react';
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#1a5276' },
-    secondary: { main: '#f39c12' },
+    background: { default: '#f4f4f4' },
   },
   typography: {
     fontFamily: 'var(--font-geist-sans), system-ui, sans-serif',

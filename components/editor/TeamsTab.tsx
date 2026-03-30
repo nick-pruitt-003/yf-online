@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  Box, Typography, Paper, Button, TextField, IconButton,
+  Box, Typography, Card, Button, TextField, IconButton,
   List, ListItem, ListItemText, ListItemSecondaryAction,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Chip, Divider, DialogContentText,
@@ -107,13 +107,15 @@ export default function TeamsTab({ handle, canEdit }: Props) {
       </Box>
 
       {totalTeams === 0 ? (
-        <Paper elevation={0} variant="outlined" sx={{ p: 4, textAlign: 'center' }}>
-          <Typography color="text.secondary">No teams yet. Add a team to get started.</Typography>
-        </Paper>
+        <Card sx={{ textAlign: 'center' }}>
+          <Box p={4}>
+            <Typography color="text.secondary">No teams yet. Add a team to get started.</Typography>
+          </Box>
+        </Card>
       ) : (
         tournament.registrations.map((reg) => (
-          <Paper key={reg.name} elevation={0} variant="outlined" sx={{ mb: 2 }}>
-            <Box px={2} py={1.5} display="flex" alignItems="center" gap={1} sx={{ bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider' }}>
+          <Card key={reg.name} sx={{ mb: 2 }}>
+            <Box px={2} py={1.5} display="flex" alignItems="center" gap={1} sx={{ bgcolor: 'grey.100', borderBottom: 1, borderColor: 'divider' }}>
               <Typography variant="subtitle2" fontWeight={700}>{reg.name}</Typography>
               <Chip label={`${reg.teams.length} team${reg.teams.length !== 1 ? 's' : ''}`} size="small" variant="outlined" />
             </Box>
@@ -149,7 +151,7 @@ export default function TeamsTab({ handle, canEdit }: Props) {
                 </Box>
               ))}
             </List>
-          </Paper>
+          </Card>
         ))
       )}
 
