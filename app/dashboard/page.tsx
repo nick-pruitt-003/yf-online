@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import TournamentCard from '@/components/TournamentCard';
+import LogoutButton from '@/components/LogoutButton';
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -29,12 +30,16 @@ export default async function DashboardPage() {
 
   return (
     <Box maxWidth={800} mx="auto" px={3} py={5}>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
         <Typography variant="h4" fontWeight={700}>My Tournaments</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} href="/tournament/new">
-          New tournament
-        </Button>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Button variant="contained" startIcon={<AddIcon />} href="/tournament/new">
+            New tournament
+          </Button>
+          <LogoutButton />
+        </Box>
       </Box>
+      <Typography variant="body2" color="text.secondary" mb={4}>{session.user.email}</Typography>
 
       {owned.length === 0 && shared.length === 0 ? (
         <Box textAlign="center" py={10}>
