@@ -151,8 +151,8 @@ export default class FileParser {
     const yfExtraData = (obj as IYftFileTournament).YfData;
 
     if (obj.name && obj.name !== Tournament.placeholderName) this.tourn.name = obj.name;
-    if (obj.startDate) this.tourn.startDate = obj.startDate;
-    if (obj.endDate) this.tourn.endDate = obj.endDate;
+    if (obj.startDate) this.tourn.startDate = new Date(obj.startDate as unknown as string);
+    if (obj.endDate) this.tourn.endDate = new Date(obj.endDate as unknown as string);
     if (obj.questionSet) this.tourn.questionSet = obj.questionSet;
 
     const site = obj.tournamentSite;
