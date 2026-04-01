@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Box, Typography, Button, Card, CardContent, IconButton, TextField,
   Dialog, DialogTitle, DialogContent, DialogActions,
