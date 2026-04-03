@@ -17,6 +17,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { useTournament } from '@/lib/yfweb/useTournament';
+import { camelCaseToSnakeCase } from '@/lib/yfdata/CaseConversion';
 import GeneralTab from '@/components/editor/GeneralTab';
 import TeamsTab from '@/components/editor/TeamsTab';
 import RulesTab from '@/components/editor/RulesTab';
@@ -191,6 +192,7 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
     // Wrap in QBJ file format { version, objects: [...] } so hsquizbowl
     // recognises it as a valid YellowFruit data file
     const fileObj = { version: '2.1.1', objects: [serialize()] };
+    camelCaseToSnakeCase(fileObj as Record<string, unknown>);
     const blob = new Blob([JSON.stringify(fileObj, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
