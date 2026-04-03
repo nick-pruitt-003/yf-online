@@ -182,7 +182,7 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
       if (versionRef.current === handle.version) save();
     }, 2000);
     return () => clearTimeout(timeout);
-  // eslint-disable-next-line @eslint-react/exhaustive-deps -- handle.version is the change signal
+   
   }, [handle.version, canEdit, dirty, save]);
 
   // ── Export ─────────────────────────────────────────────────────────────────
@@ -190,7 +190,7 @@ export default function TournamentEditor({ tournamentId, initialData, canEdit, i
   const exportYft = () => {
     // Wrap in QBJ file format { version, objects: [...] } so hsquizbowl
     // recognises it as a valid YellowFruit data file
-    const fileObj = { version: '2.1', objects: [serialize()] };
+    const fileObj = { version: '2.1.1', objects: [serialize()] };
     const blob = new Blob([JSON.stringify(fileObj, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
