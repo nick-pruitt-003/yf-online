@@ -8,7 +8,7 @@ import importX from "eslint-plugin-import-x";
 // eslint-config-next's package.json doesn't export its nested node_modules,
 // so we use createRequire to load the bundled CJS plugin directly.
 const require = createRequire(import.meta.url);
-const legacyPluginReact = require("./node_modules/eslint-config-next/node_modules/eslint-plugin-react/index.js");
+const legacyPluginReact = require("eslint-plugin-react");
 
 // Turn off every react/* rule from the bundled eslint-plugin-react.
 // That plugin uses context.getFilename() which was removed in ESLint 10.
