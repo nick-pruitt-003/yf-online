@@ -9,7 +9,7 @@ export function sumReduce(ary: number[]): number {
  * Did this field's value change such that we should prompt the user to save?
  * Changing nullish to empty string doesn't count.
  */
-export function textFieldChanged(oldVal: string, newVal: string): boolean {
+function textFieldChanged(oldVal: string, newVal: string): boolean {
   if ((oldVal === undefined || oldVal === null) && newVal === '') {
     return false;
   }
@@ -17,7 +17,7 @@ export function textFieldChanged(oldVal: string, newVal: string): boolean {
 }
 
 /** Did this field's value change such that we should prompt the user to save? */
-export function dateFieldChanged(oldVal: Dayjs | null, newVal: Dayjs | null): boolean {
+function dateFieldChanged(oldVal: Dayjs | null, newVal: Dayjs | null): boolean {
   if (oldVal === null && newVal === null) {
     return false;
   }
@@ -28,14 +28,14 @@ export function dateFieldChanged(oldVal: Dayjs | null, newVal: Dayjs | null): bo
 }
 
 /** Parse an integer from a string, substituting a default value if nothing valid can be parsed  */
-export function parseAndValidateStringToInt(str: string, deflt: number, lowerBound?: number, upperBound?: number) {
+function parseAndValidateStringToInt(str: string, deflt: number, lowerBound?: number, upperBound?: number) {
   if (str === '') return deflt;
   if (invalidInteger(str, lowerBound, upperBound)) return deflt;
   return parseInt(str, 10);
 }
 
 /** Is this string an integer within the given bounds? (Empty string is valid) */
-export function invalidInteger(str: string, lowerBound?: number, upperBound?: number) {
+function invalidInteger(str: string, lowerBound?: number, upperBound?: number) {
   if (str === '') return false;
   const int = parseInt(str, 10);
   if (Number.isNaN(int)) return true;
@@ -56,7 +56,7 @@ export function getAlphabetLetter(num: number) {
   return String.fromCharCode(unicodeA + num - 1);
 }
 
-export function nextAlphabetLetter(char: string) {
+function nextAlphabetLetter(char: string) {
   if (!isNormalTeamLetter(char)) return '';
   if (char === 'Z') return '';
   return String.fromCharCode(char.charCodeAt(0) + 1);
@@ -78,7 +78,7 @@ export function teamGetNameAndLetter(rawName: string): [string, string] {
 }
 
 /** Is this a normal team designator? (A, B, C, etc.) */
-export function isNormalTeamLetter(letter: string) {
+function isNormalTeamLetter(letter: string) {
   if (letter.length !== 1) return false;
   const ascii = letter.charCodeAt(0);
   return ascii >= unicodeA && ascii <= unicodeZ;
@@ -114,7 +114,7 @@ function getVersionNumbers(versionString: string) {
   return versionString.split('.').map((val) => parseInt(val, 10));
 }
 
-export function getFileNameFromPath(path: string) {
+function getFileNameFromPath(path: string) {
   const filePathSegments = path.split(/[\\/]/);
   return filePathSegments.pop();
 }
@@ -126,7 +126,7 @@ export function trunc(s: string, size: number) {
 }
 
 /** Returns Ctrl or ⌘, for showing keyboard shortcuts */
-export function CtrlOrCmd() {
+function CtrlOrCmd() {
   if (typeof navigator !== 'undefined') {
     const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.userAgent;
     if (platform.includes('Mac')) return String.fromCharCode(0x2318);

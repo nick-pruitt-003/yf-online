@@ -13,7 +13,7 @@ export function isQbjRefPointer(obj: IIndeterminateQbj): boolean {
 const validQbjVersions = ['2.1.1'];
 
 /** Does this file use a version of the qbj schema that we support? */
-export function qbjFileValidVersion(obj: IQbjWholeFile) {
+function qbjFileValidVersion(obj: IQbjWholeFile) {
   const { version } = obj;
   if (!version) return false;
   return validQbjVersions.includes(version);

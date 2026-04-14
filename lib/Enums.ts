@@ -1,5 +1,5 @@
 /** Pages that the user navigates among. Corresponds with buttons in the nav bar */
-export enum ApplicationPages {
+enum ApplicationPages {
   General,
   Rules,
   Schedule,

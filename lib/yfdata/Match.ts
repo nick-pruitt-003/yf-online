@@ -26,8 +26,6 @@ import { IQbjMatchQuestion, MatchQuestion } from './MatchQuestion';
 export enum StatsValidity {
   /** A normal game with normal stats */
   valid,
-  /** A game with a final score, but the player-specific stats should be ignored */
-  noIndividuals,
   /** A game that is invalid and shouldn't be used in the standings at all */
   omit,
 }
@@ -60,7 +58,7 @@ export interface IQbjMatch extends IQbjObject {
 }
 
 /** MODAQ match files have a non-standard "_round" attribute */
-export interface IModaqMatch extends IQbjMatch {
+interface IModaqMatch extends IQbjMatch {
   /** The round number as defined by the user when they exported the match from the MODAQ question reader */
   _round: number;
 }
@@ -901,7 +899,7 @@ export class Match implements IQbjMatch, IYftDataModelObject {
   }
 }
 
-export function otherTeam(whichTeam: LeftOrRight): LeftOrRight {
+function otherTeam(whichTeam: LeftOrRight): LeftOrRight {
   return whichTeam === 'left' ? 'right' : 'left';
 }
 

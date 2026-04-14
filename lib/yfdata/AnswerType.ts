@@ -17,7 +17,7 @@ export interface IQbjAnswerType extends IQbjObject {
 }
 
 /** Answer Type object as written to a .yft file */
-export interface IYftFileAnswerType extends IQbjAnswerType, IYftFileObject {}
+interface IYftFileAnswerType extends IQbjAnswerType, IYftFileObject {}
 
 /** YellowFruit implementation of the AnswerType object */
 class AnswerType implements IQbjAnswerType, IYftDataModelObject {

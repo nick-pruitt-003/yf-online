@@ -12,7 +12,7 @@ function unicodeTruncate(str: string, max: number): string {
 }
 
 /** Count Unicode code points (not UTF-16 code units). */
-export function unicodeLength(str: string): number {
+function unicodeLength(str: string): number {
   return Array.from(str).length;
 }
 import { versionLt } from '../Utils/GeneralUtils';
@@ -1237,7 +1237,7 @@ function getYfAnswerTypeFromValue(value: number, answerTypes: AnswerType[]) {
 
 // only exporting so I can unit test
 /** Translate Qbj numeric year to YF string representation. Returns undefined if invalid. */
-export function parsePlayerYear(yearFromFile: number | undefined): string | undefined {
+function parsePlayerYear(yearFromFile: number | undefined): string | undefined {
   if (yearFromFile === undefined) return '';
   if (yearFromFile < -1 || 18 < yearFromFile) return undefined;
   if (yearFromFile === -1) return '';

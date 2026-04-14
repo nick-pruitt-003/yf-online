@@ -644,7 +644,7 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
 /**
  * A round-robin phase for a tournament where it's just one big round robin pool
  */
-export function simpleRoundRobinPrelims(numTeams: number, numRRs: number, autoQualChunks?: number[]) {
+function simpleRoundRobinPrelims(numTeams: number, numRRs: number, autoQualChunks?: number[]) {
   const rrPool = new Pool(numTeams, 1, 'Round Robin', false, 1, numTeams);
   rrPool.roundRobins = numRRs;
   if (autoQualChunks) setAutoAdvanceRules(rrPool, autoQualChunks);

@@ -31,7 +31,7 @@ interface AdvancementOpportunity {
   rankingRule: AutoQualificationRankRules;
 }
 
-export function advOpportunityDisplay(ao: AdvancementOpportunity) {
+function advOpportunityDisplay(ao: AdvancementOpportunity) {
   if (ao.ranksThatAdvance.length < 1) return '';
   if (ao.ranksThatAdvance.length === 1) return `Rank ${ao.ranksThatAdvance[0]} advances to tier ${ao.tier}`;
   return `Ranks ${ao.ranksThatAdvance.join(', ')} advance to tier ${ao.tier}`;
@@ -233,7 +233,7 @@ export class Pool implements IQbjPool, IYftDataModelObject {
  * @param hasCarryOver does these pools carry over matches from the previous phase?
  * if the top 2 teams go to the top tier, next 2 to the middle, and last 1 to the bottom
  */
-export function makePoolSet(
+function makePoolSet(
   numPools: number,
   poolSize: number,
   position: number,
@@ -272,7 +272,7 @@ export function setAutoAdvanceRules(pool: Pool, autoQualChunks: number[]) {
   }
 }
 
-export function makePlacementPools(
+function makePlacementPools(
   numPools: number,
   size: number,
   startingTier: number,
@@ -315,7 +315,7 @@ function placementPoolName(topRank: number) {
  * @param topSeed Highest seed involved (lowest number)
  * @param bottomSeed Lowest seed involved (highest number)
  */
-export function snakeSeed(pools: Pool[], topSeed: number, bottomSeed: number) {
+function snakeSeed(pools: Pool[], topSeed: number, bottomSeed: number) {
   let seed = topSeed;
   let direction: 1 | -1 = 1;
   while (seed <= bottomSeed) {
@@ -326,7 +326,7 @@ export function snakeSeed(pools: Pool[], topSeed: number, bottomSeed: number) {
 }
 
 // only exporting for unit tests
-export function seedOneRow(pools: Pool[], firstSeed: number, maxSeed: number, direction: 1 | -1) {
+function seedOneRow(pools: Pool[], firstSeed: number, maxSeed: number, direction: 1 | -1) {
   const poolStart = direction === 1 ? 0 : pools.length - 1;
   const poolEnd = direction === 1 ? pools.length - 1 : 0;
   let curSeed = firstSeed;

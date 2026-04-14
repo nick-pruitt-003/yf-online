@@ -1061,6 +1061,6 @@ class Tournament implements IQbjTournament, IYftDataModelObject {
   }
 }
 
-export const NullTournament = new Tournament('Null Tournament');
+const NullTournament = new Tournament('Null Tournament');
 
 export default Tournament;
