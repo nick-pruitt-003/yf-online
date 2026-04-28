@@ -1,0 +1,32 @@
+ 
+import { Match } from '../yfdata/Match';
+import Registration from '../yfdata/Registration';
+import { Team } from '../yfdata/Team';
+
+export type LeftOrRight = 'left' | 'right';
+
+export type wlt = 'win' | 'loss' | 'tie';
+
+/** Dummy object representing a lack of a date */
+export class NullDate extends Date {
+  static nullStr = 'Yft Null Date';
+
+  static isNullDate(d: Date): boolean {
+    return d.toString() === NullDate.nullStr;
+  }
+
+   
+  toString(): string {
+    return NullDate.nullStr;
+  }
+}
+
+export class NullObjects {
+  static nullDate = new NullDate();
+
+  static nullRegistration = new Registration('');
+
+  static nullTeam = new Team('');
+
+  static nullMatch = new Match();
+}

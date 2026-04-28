@@ -44,19 +44,22 @@ model Session {
 }
 
 model Account {
-  id           String    @id @default(cuid())
-  accountId    String
-  providerId   String
-  userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken  String?
-  refreshToken String?
-  idToken      String?
-  expiresAt    DateTime?
-  password     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
+  @@unique([providerId, accountId])
   @@index([userId])
 }
 
@@ -77,12 +80,13 @@ model YfTournament {
   id        String   @id @default(cuid())
   name      String
   ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   data      Json     // full YFT file contents (serialized YellowFruit tournament)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  shares YfTournamentShare[]
+  shares    YfTournamentShare[]
+  snapshots YfTournamentSnapshot[]
 
   @@index([ownerId])
 }
@@ -98,4 +102,14 @@ model YfTournamentShare {
 
   @@unique([tournamentId, userId])
   @@index([userId])
+}
+
+model YfTournamentSnapshot {
+  id           String       @id @default(cuid())
+  tournamentId String
+  tournament   YfTournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  data         Json
+  createdAt    DateTime     @default(now())
+
+  @@index([tournamentId, createdAt])
 }
