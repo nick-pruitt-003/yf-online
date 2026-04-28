@@ -1,4 +1,4 @@
-import { IQbjObject, IQbjRefPointer, IYftDataModelObject, IYftFileObject } from './Interfaces';
+import { IQbjObject, IQbjRefPointer, IYftDataModelObject } from './Interfaces';
 import { QbjTypeNames } from './QbjEnums';
 import { makeQbjRefPointer } from './QbjUtils';
 
@@ -15,9 +15,6 @@ export interface IQbjAnswerType extends IQbjObject {
   /** Whether or not the team that gets this answer value will next receive a bonus question */
   awardsBonus?: boolean;
 }
-
-/** Answer Type object as written to a .yft file */
-interface IYftFileAnswerType extends IQbjAnswerType, IYftFileObject {}
 
 /** YellowFruit implementation of the AnswerType object */
 class AnswerType implements IQbjAnswerType, IYftDataModelObject {

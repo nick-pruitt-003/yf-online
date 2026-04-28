@@ -1,4 +1,3 @@
-import { getAlphabetLetter } from '../Utils/GeneralUtils';
 import { IQbjObject, IYftDataModelObject, IYftFileObject } from './Interfaces';
  
 import { Match } from './Match';
@@ -29,12 +28,6 @@ interface AdvancementOpportunity {
   ranksThatAdvance: number[];
   /** How do we rank teams to determine who goes where in the next phase? */
   rankingRule: AutoQualificationRankRules;
-}
-
-function advOpportunityDisplay(ao: AdvancementOpportunity) {
-  if (ao.ranksThatAdvance.length < 1) return '';
-  if (ao.ranksThatAdvance.length === 1) return `Rank ${ao.ranksThatAdvance[0]} advances to tier ${ao.tier}`;
-  return `Ranks ${ao.ranksThatAdvance.join(', ')} advance to tier ${ao.tier}`;
 }
 
 /** A group of teams, e.g. a single prelim bracket */
@@ -220,37 +213,6 @@ export class Pool implements IQbjPool, IYftDataModelObject {
   }
 }
 
-/**
- * Make a set of parallel pools
- * @param numPools how many pools to make
- * @param poolSize how many teams in each pool
- * @param position which tier these pools are in
- * @param nameStarter first part of the name for each pool; e.g. pass in "Prelim " to get "Prelim 1", "Prelim 2", etc.
- *  (you must include a space if you want one)
- * @param autoQualChunks in order, the number of teams qualifying for each subequent tier. e.g. [2, 2, 1]. You must
- * include zeroes for any tier the pool does not send teams to, e.g. [0, 0, 3, 3] for lower playoff pools that populate
- * the bottom two of four superplayoff pools
- * @param hasCarryOver does these pools carry over matches from the previous phase?
- * if the top 2 teams go to the top tier, next 2 to the middle, and last 1 to the bottom
- */
-function makePoolSet(
-  numPools: number,
-  poolSize: number,
-  position: number,
-  nameStarter: string,
-  autoQualChunks: number[],
-  hasCarryOver?: boolean,
-): Pool[] {
-  const pools: Pool[] = [];
-  for (let i = 1; i <= numPools; i++) {
-    const onePool = new Pool(poolSize, position, `${nameStarter}${getAlphabetLetter(i)}`, hasCarryOver);
-
-    setAutoAdvanceRules(onePool, autoQualChunks);
-    pools.push(onePool);
-  }
-  return pools;
-}
-
 export function setAutoAdvanceRules(pool: Pool, autoQualChunks: number[]) {
   pool.autoAdvanceRules = [];
   let tier = 0;
@@ -272,71 +234,3 @@ export function setAutoAdvanceRules(pool: Pool, autoQualChunks: number[]) {
   }
 }
 
-function makePlacementPools(
-  numPools: number,
-  size: number,
-  startingTier: number,
-  startSeed: number,
-  endSeed: number,
-  hasCarryOver: boolean = false,
-) {
-  const pools: Pool[] = [];
-  let curTier = startingTier;
-  for (let i = 1; i <= numPools; i++) {
-    const firstSeed = startSeed + (i - 1) * size;
-    const lastSeed = Math.min(firstSeed + size - 1, endSeed);
-    const curSize = lastSeed - firstSeed + 1;
-    pools.push(new Pool(curSize, curTier, placementPoolName(firstSeed), hasCarryOver, firstSeed, lastSeed));
-    curTier++;
-  }
-  return pools;
-}
-
-function placementPoolName(topRank: number) {
-  if (topRank === 1) return 'Championship';
-  if (10 <= topRank && topRank <= 19) return `${topRank}th Place`;
-  const unitsDigit = topRank % 10;
-  switch (unitsDigit) {
-    case 1:
-      return `${topRank}st Place`;
-    case 2:
-      return `${topRank}nd Place`;
-    case 3:
-      return `${topRank}rd Place`;
-    default:
-      return `${topRank}th Place`;
-  }
-}
-
-/**
- * Populate seeds array in the given pools. Caller is responsible for making sure pools are in the desired order
- * and that numTeams is compatible with the list of pools.
- * @param pools List of pools. Should be in the same tier.
- * @param topSeed Highest seed involved (lowest number)
- * @param bottomSeed Lowest seed involved (highest number)
- */
-function snakeSeed(pools: Pool[], topSeed: number, bottomSeed: number) {
-  let seed = topSeed;
-  let direction: 1 | -1 = 1;
-  while (seed <= bottomSeed) {
-    seedOneRow(pools, seed, bottomSeed, direction);
-    seed += pools.length;
-    direction = direction === 1 ? -1 : 1;
-  }
-}
-
-// only exporting for unit tests
-function seedOneRow(pools: Pool[], firstSeed: number, maxSeed: number, direction: 1 | -1) {
-  const poolStart = direction === 1 ? 0 : pools.length - 1;
-  const poolEnd = direction === 1 ? pools.length - 1 : 0;
-  let curSeed = firstSeed;
-  for (let i = poolStart; ; i += direction) {
-    if (curSeed > maxSeed) break;
-
-    pools[i].seeds.push(curSeed);
-    curSeed++;
-
-    if (direction === 1 && i >= poolEnd) break;
-    if (direction === -1 && i <= poolEnd) break;
-  }
-}

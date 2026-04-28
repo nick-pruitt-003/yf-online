@@ -1,65 +1,17 @@
-import { Dayjs } from 'dayjs';
-
-/** Add up the numbers in an array */
-export function sumReduce(ary: number[]): number {
-  return ary.reduce((sumSoFar, currVal) => sumSoFar + currVal, 0);
-}
-
-/**
- * Did this field's value change such that we should prompt the user to save?
- * Changing nullish to empty string doesn't count.
- */
-function textFieldChanged(oldVal: string, newVal: string): boolean {
-  if ((oldVal === undefined || oldVal === null) && newVal === '') {
-    return false;
-  }
-  return oldVal !== newVal;
-}
-
-/** Did this field's value change such that we should prompt the user to save? */
-function dateFieldChanged(oldVal: Dayjs | null, newVal: Dayjs | null): boolean {
-  if (oldVal === null && newVal === null) {
-    return false;
-  }
-  if (oldVal === null || newVal === null) {
-    return true;
-  }
-  return oldVal.unix() !== newVal.unix();
-}
-
-/** Parse an integer from a string, substituting a default value if nothing valid can be parsed  */
-function parseAndValidateStringToInt(str: string, deflt: number, lowerBound?: number, upperBound?: number) {
-  if (str === '') return deflt;
-  if (invalidInteger(str, lowerBound, upperBound)) return deflt;
-  return parseInt(str, 10);
-}
-
-/** Is this string an integer within the given bounds? (Empty string is valid) */
-function invalidInteger(str: string, lowerBound?: number, upperBound?: number) {
-  if (str === '') return false;
-  const int = parseInt(str, 10);
-  if (Number.isNaN(int)) return true;
-  if (parseFloat(str) % 1) return true;
-  if (lowerBound !== undefined && int < lowerBound) return true;
-  if (upperBound !== undefined && int > upperBound) return true;
-  return false;
-}
-
 /** Unicode/ASCII code for uppercase 'A' */
 const unicodeA = 65;
 
 /** Unicode/ASCII code for uppercase 'Z' */
 const unicodeZ = 90;
 
+/** Add up the numbers in an array */
+export function sumReduce(ary: number[]): number {
+  return ary.reduce((sumSoFar, currVal) => sumSoFar + currVal, 0);
+}
+
 /** Get the nth letter of the alphabet (uppercase) */
 export function getAlphabetLetter(num: number) {
   return String.fromCharCode(unicodeA + num - 1);
-}
-
-function nextAlphabetLetter(char: string) {
-  if (!isNormalTeamLetter(char)) return '';
-  if (char === 'Z') return '';
-  return String.fromCharCode(char.charCodeAt(0) + 1);
 }
 
 /** Split team name into org name + letter if possible, e.g. "Riverview A" -> ["Riverview", "A"] */
@@ -114,22 +66,8 @@ function getVersionNumbers(versionString: string) {
   return versionString.split('.').map((val) => parseInt(val, 10));
 }
 
-function getFileNameFromPath(path: string) {
-  const filePathSegments = path.split(/[\\/]/);
-  return filePathSegments.pop();
-}
-
 /** Truncate a string to a desired length, appending an ellipsis if truncation was done */
 export function trunc(s: string, size: number) {
   if (s.length <= size) return s;
   return `${s.substring(0, size).trim()}...`;
-}
-
-/** Returns Ctrl or ⌘, for showing keyboard shortcuts */
-function CtrlOrCmd() {
-  if (typeof navigator !== 'undefined') {
-    const platform = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ?? navigator.userAgent;
-    if (platform.includes('Mac')) return String.fromCharCode(0x2318);
-  }
-  return 'Ctrl';
 }

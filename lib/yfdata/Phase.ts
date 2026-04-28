@@ -2,7 +2,7 @@
 import { IQbjRound, Round } from './Round';
 import { IQbjObject, IYftDataModelObject, IYftFileObject } from './Interfaces';
  
-import { IQbjPool, Pool, setAutoAdvanceRules } from './Pool';
+import { IQbjPool, Pool } from './Pool';
 import { QbjTypeNames } from './QbjEnums';
  
 import { Team } from './Team';
@@ -641,16 +641,3 @@ export class Phase implements IQbjPhase, IYftDataModelObject {
   }
 }
 
-/**
- * A round-robin phase for a tournament where it's just one big round robin pool
- */
-function simpleRoundRobinPrelims(numTeams: number, numRRs: number, autoQualChunks?: number[]) {
-  const rrPool = new Pool(numTeams, 1, 'Round Robin', false, 1, numTeams);
-  rrPool.roundRobins = numRRs;
-  if (autoQualChunks) setAutoAdvanceRules(rrPool, autoQualChunks);
-
-  const numRounds = numRRs * (numTeams - (1 - (numTeams % 2)));
-  const roundRobin = new Phase(PhaseTypes.Prelim, 1, numRounds, '1', 'Round Robin');
-  roundRobin.pools = [rrPool];
-  return roundRobin;
-}

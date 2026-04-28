@@ -11,10 +11,6 @@ function unicodeTruncate(str: string, max: number): string {
   return codePoints.length <= max ? str : codePoints.slice(0, max).join('');
 }
 
-/** Count Unicode code points (not UTF-16 code units). */
-function unicodeLength(str: string): number {
-  return Array.from(str).length;
-}
 import { versionLt } from '../Utils/GeneralUtils';
 import AnswerType, { IQbjAnswerType, sortAnswerTypes } from './AnswerType';
 import { IIndeterminateQbj, IQbjObject, IQbjRefPointer, IRefTargetDict, IYftDataModelObject } from './Interfaces';

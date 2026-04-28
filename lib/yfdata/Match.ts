@@ -57,12 +57,6 @@ export interface IQbjMatch extends IQbjObject {
   matchQuestions?: IQbjMatchQuestion[];
 }
 
-/** MODAQ match files have a non-standard "_round" attribute */
-interface IModaqMatch extends IQbjMatch {
-  /** The round number as defined by the user when they exported the match from the MODAQ question reader */
-  _round: number;
-}
-
 /** Tournament object as written to a .yft file */
 export interface IYftFileMatch extends IQbjMatch, IYftFileObject {
   YfData: IMatchExtraData;
@@ -897,10 +891,6 @@ export class Match implements IQbjMatch, IYftDataModelObject {
   unSuppressMessageType(type: MatchValidationType) {
     this.modalBottomValidation.unSuppressMessageType(type);
   }
-}
-
-function otherTeam(whichTeam: LeftOrRight): LeftOrRight {
-  return whichTeam === 'left' ? 'right' : 'left';
 }
 
 function addParensToNegative(score: number | undefined): string {
